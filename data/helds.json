@@ -1,0 +1,107 @@
+{
+  "attack_t8": {
+    "name": "Attack T8",
+    "image": "https://wiki.pokexgames.com/images/0/00/X-Attack_Tier_8.png",
+    "description": "Aumenta a força do Pokémon em 31%."
+  },
+  "ghost_t4": {
+    "name": "Ghost T4",
+    "image": "https://wiki.pokexgames.com/images/a/ab/Ghost.png",
+    "description": "O Pokémon ganha propriedades de fantasma, tornando-se capaz de atravessar paredes."
+  },
+  "attack_t7": {
+    "name": "Attack T7",
+    "image": "/assets/helds/Attack_T7.png",
+    "description": "Aumenta a força do Pokémon em 28%."
+  },
+  "attack_t5": {
+    "name": "Attack T5",
+    "image": "/assets/helds/Attack_T5.png",
+    "description": "Aumenta a força do Pokémon em 22%."
+  },
+  "attack_t6": {
+    "name": "Attack T6",
+    "image": "/assets/helds/Attack_T6.png",
+    "description": "Aumenta a força do Pokémon em 25%."
+  },
+  "attack_t4": {
+    "name": "Attack T4",
+    "image": "/assets/helds/Attack_T4.png",
+    "description": "Aumenta a força do Pokémon em 19%."
+  },
+  "venusaurite": {
+    "name": "Venusaurite",
+    "image": "https://wiki.pokexgames.com/images/d/d5/Venusaurite.png",
+    "description": "Esta pedra faz seu pokemon mega-evoluir."
+  },
+  "lucky_t9": {
+    "name": "Lucky T9",
+    "image": "/assets/helds/Lucky_T9.png",
+    "description": "Aumenta a chance de dropar itens em 150%."
+  },
+  "wing_t6": {
+    "name": "Wing T6",
+    "image": "/assets/helds/Wing_T6.png",
+    "description": "Aumenta a velocidade de voo do Pokémon em 310ms."
+  },
+  "beedrilite": {
+    "name": "Beedrilite",
+    "image": "https://wiki.pokexgames.com/images/1/1f/Beedrillite.png",
+    "description": "Esta pedra faz seu pokemon mega-evoluir."
+  },
+  "defense_t7": {
+    "name": "Defense T7",
+    "image": "/assets/helds/Defense_T7.png",
+    "description": "Aumenta a defesa do Pokémon em 24%."
+  },
+  "cameruptite": {
+    "name": "Cameruptite",
+    "image": "https://wiki.pokexgames.com/images/8/83/Cameruptite.png",
+    "description": "Esta pedra faz seu pokemon mega-evoluir."
+  },
+  "bug-type_tr": {
+    "name": "Bug-Type TR",
+    "image": "https://wiki.pokexgames.com/images/4/4d/Bug-Type_TR_Collection_%28Scyther%29.png",
+    "description": "Este item altera o moveset para Burst Damage Dealer (BDD) do Scyther."
+  },
+  "poison_t7": {
+    "name": "Poison T7",
+    "image": "/assets/helds/Poison_T7.png",
+    "description": "Aumenta o dano do status Poison em 300%."
+  },
+  "teleport_t6": {
+    "name": "Teleport T6",
+    "image": "/assets/helds/Teleport_T6.png",
+    "description": "Reduz o tempo de recarga da habilidade teleport em 25 minutos."
+  },
+  "critical_t4": {
+    "name": "Critical T4",
+    "image": "/assets/helds/Critical_T4.png",
+    "description": "Concede uma chance de 14% de causar dano crítico."
+  },
+  "critical_t8": {
+    "name": "Critical T8",
+    "image": "/assets/helds/Critical_T8.png",
+    "description": "Concede uma chance de 27% de causar dano crítico."
+  },
+  "boost_t7": {
+    "name": "Boost T7",
+    "image": "/assets/helds/Boost_T7.png",
+    "description": "Aumenta o boost do Pokémon em 36."
+  },
+  "boost_t4": {
+    "name": "Boost T4",
+    "image": "/assets/helds/Boost_T4.png",
+    "description": "Aumenta o boost do Pokémon em 24."
+  },
+  "defense_t5": {
+    "name": "Defense T5",
+    "image": "/assets/helds/Defense_T5.png",
+    "description": "Aumenta a defesa do Pokémon em 16%."
+  },
+  "defense_t6": {
+    "name": "Defense T6",
+    "image": "/assets/helds/Defense_T6.png",
+    "description": "Aumenta a defesa do Pokémon em 20%."
+  }
+}

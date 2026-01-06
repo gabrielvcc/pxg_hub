@@ -1,0 +1,78 @@
+{
+  "grass": {
+    "name": "Grass",
+    "image": "https://wiki.pokexgames.com/images/c/c5/Grass.png"
+  },
+  "poison": {
+    "name": "Poison",
+    "image": "https://wiki.pokexgames.com/images/0/03/Poison1.png"
+  },
+  "fire": {
+    "name": "Fire",
+    "image": "https://wiki.pokexgames.com/images/3/30/Fire.png"
+  },
+  "water": {
+    "name": "Water",
+    "image": "https://wiki.pokexgames.com/images/9/9d/Water.png"
+  },
+  "normal": {
+    "name": "Normal",
+    "image": "https://wiki.pokexgames.com/images/e/e8/Normal1.png"
+  },
+  "electric": {
+    "name": "Electric",
+    "image": "https://wiki.pokexgames.com/images/2/2f/Electric.png"
+  },
+  "psychic": {
+    "name": "Psychic",
+    "image": "https://wiki.pokexgames.com/images/2/21/Psychic.png"
+  },
+  "ghost": {
+    "name": "Ghost",
+    "image": "https://wiki.pokexgames.com/images/5/59/Ghost1.png"
+  },
+  "ice": {
+    "name": "Ice",
+    "image": "https://wiki.pokexgames.com/images/7/77/Ice.png"
+  },
+  "flying": {
+    "name": "Flying",
+    "image": "https://wiki.pokexgames.com/images/7/7f/Flying.png"
+  },
+  "dark": {
+    "name": "Dark",
+    "image": "https://wiki.pokexgames.com/images/9/98/Dark1.png"
+  },
+  "dragon": {
+    "name": "Dragon",
+    "image": "https://wiki.pokexgames.com/images/c/c7/Dragon.png"
+  },
+  "ground": {
+    "name": "Ground",
+    "image": "https://wiki.pokexgames.com/images/8/8f/Ground.png"
+  },
+  "rock": {
+    "name": "Rock",
+    "image": "https://wiki.pokexgames.com/images/0/0b/Rock.png"
+  },
+  "steel": {
+    "name": "Steel",
+    "image": "https://wiki.pokexgames.com/images/c/c9/Steel.png"
+  },
+  "fairy": {
+    "name": "Fairy",
+    "image": "https://wiki.pokexgames.com/images/4/43/Fairy.png"
+  },
+  "fighting": {
+    "name": "Fighting",
+    "image": "https://wiki.pokexgames.com/images/3/30/Fighting.png"
+  },
+  "bug": {
+    "name": "Bug",
+    "image": "https://wiki.pokexgames.com/images/7/7d/Bug.png"
+  },
+  "crystal": {
+    "name": "Crystal",
+    "image": "https://wiki.pokexgames.com/images/3/31/Crystal.png"
+  }
+}

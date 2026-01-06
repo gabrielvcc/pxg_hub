@@ -1,0 +1,46 @@
+{
+  "ultra_ball": {
+    "name": "Ultra Ball",
+    "image": "https://wiki.pokexgames.com/images/9/9b/Ultra-ball%281%29.png"
+  },
+  "premier_ball": {
+    "name": "Premier Ball",
+    "image": "https://wiki.pokexgames.com/images/e/e6/Premier-ball%281%29.png"
+  },
+  "yume_ball": {
+    "name": "Yume Ball",
+    "image": "https://wiki.pokexgames.com/images/9/9f/Yume-ball.png"
+  },
+  "poke_ball": {
+    "name": "Poke ball",
+    "image": "https://wiki.pokexgames.com/images/8/8e/Poke-ball%281%29.png"
+  },
+  "heavy_ball": {
+    "name": "Heavy ball",
+    "image": "https://wiki.pokexgames.com/images/c/c5/Heavy-ball.png"
+  },
+  "net_ball": {
+    "name": "Net ball",
+    "image": "https://wiki.pokexgames.com/images/0/02/Net-ball.png"
+  },
+  "magu_ball": {
+    "name": "Magu ball",
+    "image": "https://wiki.pokexgames.com/images/0/02/Magu-ball.png"
+  },
+  "saffari_ball": {
+    "name": "Saffari ball",
+    "image": "https://wiki.pokexgames.com/images/3/30/Saffari-ball%281%29.png"
+  },
+  "tinker_ball": {
+    "name": "Tinker Ball",
+    "image": "https://wiki.pokexgames.com/images/8/8b/Tinker-ball.png"
+  },
+  "master_ball": {
+    "name": "Master Ball",
+    "image": "https://wiki.pokexgames.com/images/d/d6/Master-ball%281%29.png"
+  },
+  "janguru_ball": {
+    "name": "Janguru Ball",
+    "image": "https://wiki.pokexgames.com/images/9/90/Janguru-ball.png"
+  }
+}

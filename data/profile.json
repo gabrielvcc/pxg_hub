@@ -1,0 +1,23 @@
+{
+  "username": "Palitou",
+  "title": "The Chosen One",
+  "avatar": "assets/avatar.png",
+
+  "stats": {
+    "level": 602,
+    "captures": 308,
+    "profession": 120,
+    "nightmare": 93,
+    "achievements": 343,
+    "pokelog": 1821,
+    "fishing": 86,
+    "wins": 3
+  },
+
+  "badges": [
+    "assets/badges/kanto.png",
+    "assets/badges/johto.png",
+    "assets/badges/hoenn.png",
+    "assets/badges/sinnoh.png"
+  ]
+}
