@@ -180,26 +180,88 @@ body {
   padding-left: 12px;
 }
 
-/* BADGES */
-.badges {
+/* DEVICE */
+.device-helds {
   display: flex;
+  gap: 12px;
+}
+
+.profile-device h3 {
+  margin-bottom: 80px;
+  color: var(--accent);
+}
+
+.device-helds img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+/* METAS */
+
+.metas {
+  display: flex;
+  flex-direction: column;
   gap: 14px;
-  flex-wrap: wrap;
+  width: 50%;
 }
 
-.badge {
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
-  background: #11111a;
-  padding: 6px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.meta-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #14141e, #1c1c2b);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.badge:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 12px var(--accent-glow-soft);
+.meta-image {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
 }
+
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.meta-card.progress {
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
+}
+
+.meta-progress {
+  font-size: 13px;
+  color: #facc15;
+}
+
+.meta-card.completed {
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.35);
+}
+
+.meta-complete {
+  font-size: 13px;
+  color: #22c55e;
+}
+
+.meta-card.clickable:hover {
+  cursor: pointer;
+  transform: translateY(-2px);
+}
+
+.meta-card.completed::after {
+  content: "↗";
+  margin-left: auto;
+  opacity: 0.6;
+}
+
 
 /* TITLES OTHER PAGES */
 

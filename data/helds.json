@@ -84,6 +84,11 @@
     "image": "/assets/helds/Critical_T8.png",
     "description": "Concede uma chance de 27% de causar dano crítico."
   },
+  "critical_t8_device": {
+    "name": "Critical T8",
+    "image": "/assets/helds/Critical_T8 - Device.png",
+    "description": "Concede uma chance de 27% de causar dano crítico."
+  },
   "boost_t7": {
     "name": "Boost T7",
     "image": "/assets/helds/Boost_T7.png",
@@ -103,5 +108,15 @@
     "name": "Defense T6",
     "image": "/assets/helds/Defense_T6.png",
     "description": "Aumenta a defesa do Pokémon em 20%."
+  },
+  "block_t8": {
+    "name": "Block T8",
+    "image": "/assets/helds/Block_T8.png",
+    "description": "Concede uma chance de 25% de bloquear 90% de um ataque recebido."
+  },
+  "block_t8_device": {
+    "name": "Block T8",
+    "image": "/assets/helds/Block_T8 - Device.png",
+    "description": "Concede uma chance de 25% de bloquear 90% de um ataque recebido."
   }
 }

@@ -1,7 +1,7 @@
 {
   "username": "Palitou",
   "title": "The Chosen One",
-  "avatar": "assets/avatar.png",
+  "avatar": "/assets/imgs/Profile-pxg.png",
 
   "stats": {
     "level": 602,
@@ -13,11 +13,26 @@
     "fishing": 86,
     "wins": 3
   },
+  "device": ["critical_t8_device", "block_t8_device"],
 
-  "badges": [
-    "assets/badges/kanto.png",
-    "assets/badges/johto.png",
-    "assets/badges/hoenn.png",
-    "assets/badges/sinnoh.png"
+  "metas": [
+    {
+      "id": "shiny_charm",
+      "title": "Shiny Charm",
+      "image": "https://wiki.pokexgames.com/images/8/82/Shiny-charm.png",
+      "status": "progress",
+      "progress": {
+        "current": 7,
+        "total": 65,
+        "label": "fragmentos da lâmpada"
+      }
+    },
+    {
+      "id": "chosen",
+      "title": "The Chosen One Quest",
+      "image": "https://wiki.pokexgames.com/images/0/0c/249-Lugia.png",
+      "status": "completed",
+      "link": "conquistas#nightmare"
+    }
   ]
 }

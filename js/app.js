@@ -12,36 +12,86 @@ navItems.forEach(item => {
   });
 });
 
-// CARREGAR PERFIL
-fetch('data/profile.json')
-  .then(res => res.json())
-  .then(data => {
+// PERFIL
+Promise.all([
+  fetch('data/profile.json').then(r => r.json()),
+  fetch('data/helds.json').then(r => r.json())
+]).then(([profile, helds]) => {
 
-    // Info básica
-    document.getElementById('username').innerText = data.username;
-    document.getElementById('title').innerText = data.title;
-    document.getElementById('avatar').src = data.avatar;
+  // Info básica
+  document.getElementById('username').innerText = profile.username;
+  document.getElementById('title').innerText = profile.title;
+  document.getElementById('avatar').src = profile.avatar;
 
-    // Stats
-    document.getElementById('level').innerText = data.stats.level;
-    document.getElementById('captures').innerText = data.stats.captures;
-    document.getElementById('profession').innerText = data.stats.profession;
-    document.getElementById('nightmare').innerText = data.stats.nightmare;
-    document.getElementById('achievements').innerText = data.stats.achievements;
-    document.getElementById('pokelog').innerText = data.stats.pokelog;
-    document.getElementById('fishing').innerText = data.stats.fishing;
-    document.getElementById('wins').innerText = data.stats.wins;
+  // Stats
+  document.getElementById('level').innerText = profile.stats.level;
+  document.getElementById('captures').innerText = profile.stats.captures;
+  document.getElementById('profession').innerText = profile.stats.profession;
+  document.getElementById('nightmare').innerText = profile.stats.nightmare;
+  document.getElementById('achievements').innerText = profile.stats.achievements;
+  document.getElementById('pokelog').innerText = profile.stats.pokelog;
+  document.getElementById('fishing').innerText = profile.stats.fishing;
+  document.getElementById('wins').innerText = profile.stats.wins;
 
-    // Badges
-    const badgesDiv = document.getElementById('badges');
-    data.badges.forEach(b => {
-      const img = document.createElement('img');
-      img.src = b;
-      img.className = 'badge';
-      badgesDiv.appendChild(img);
-    });
+  // DEVICE
 
+  const deviceDiv = document.getElementById('deviceHelds');
+
+  profile.device.forEach(id => {
+    const held = helds[id];
+    if (!held) return;
+
+    deviceDiv.innerHTML += `
+      <div class="held">
+        <img src="${held.image}">
+        <div class="tooltip">
+          <b>${held.name}</b><br>${held.description}
+        </div>
+      </div>
+    `;
   });
+
+  // METAS
+
+  const metasContainer = document.getElementById('metasS');
+
+profile.metas.forEach(meta => {
+  const card = document.createElement('div');
+  card.classList.add('meta-card', meta.status);
+
+  if (meta.status === 'completed' && meta.link) {
+    card.classList.add('clickable');
+    card.addEventListener('click', () => {
+      document.querySelector('[data-page="conquistas"]').click();
+      if (meta.link.includes('#')) {
+        setTimeout(() => {
+          location.hash = meta.link.split('#')[1];
+        }, 200);
+      }
+    });
+  }
+
+  card.innerHTML = `
+    <img src="${meta.image}" class="meta-image">
+
+    <div class="meta-info">
+      <div class="meta-title">${meta.title}</div>
+
+      ${
+        meta.status === 'progress'
+          ? `<div class="meta-progress">
+              Em progresso - ${meta.progress.current}/${meta.progress.total}
+              ${meta.progress.label}
+            </div>`
+          : `<div class="meta-complete">Concluído</div>`
+      }
+    </div>
+  `;
+
+  metasContainer.appendChild(card);
+});
+
+});
 
 teamGrid.classList.add('view-grid');
 
@@ -141,24 +191,31 @@ document.addEventListener('mouseover', e => {
 
   tooltip.style.display = 'block';
 
-  // Espera renderizar pra medir
   requestAnimationFrame(() => {
     const rect = tooltip.getBoundingClientRect();
     const padding = 8;
 
-    // Passou da esquerda
-    if (rect.left < padding) {
+    const container = document.querySelector('.content'); // ⚠️ ajusta se necessário
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+
+    // Passou da esquerda do conteúdo
+    if (rect.left < containerRect.left + padding) {
       tooltip.style.left = '0';
+      tooltip.style.right = 'auto';
       tooltip.style.transform = 'translateX(0)';
     }
 
-    // Passou da direita
-    if (rect.right > window.innerWidth - padding) {
-      tooltip.style.left = '100%';
-      tooltip.style.transform = 'translateX(-100%)';
+    // Passou da direita do conteúdo
+    if (rect.right > containerRect.right - padding) {
+      tooltip.style.left = 'auto';
+      tooltip.style.right = '0';
+      tooltip.style.transform = 'translateX(0)';
     }
   });
 });
+
 
 document.addEventListener('mouseout', e => {
   const held = e.target.closest('.held, .inactive-item, .pokeball, .type-icon');
