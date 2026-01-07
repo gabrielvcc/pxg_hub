@@ -2,6 +2,7 @@
   "username": "Palitou",
   "title": "The Chosen One",
   "avatar": "/assets/imgs/Profile-pxg.png",
+  "main_type": "grass",
 
   "stats": {
     "level": 602,
@@ -21,6 +22,7 @@
       "title": "Shiny Charm",
       "image": "https://wiki.pokexgames.com/images/8/82/Shiny-charm.png",
       "status": "progress",
+      "link": "shiny_charm",
       "progress": {
         "current": 7,
         "total": 65,

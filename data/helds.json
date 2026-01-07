@@ -118,5 +118,10 @@
     "name": "Block T8",
     "image": "/assets/helds/Block_T8 - Device.png",
     "description": "Concede uma chance de 25% de bloquear 90% de um ataque recebido."
+  },
+  "return_t5": {
+    "name": "Return T5",
+    "image": "/assets/helds/Return_T5.png",
+    "description": "Retorna 6% de todo dano recebido."
   }
 }

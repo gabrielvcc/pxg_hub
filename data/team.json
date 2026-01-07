@@ -358,5 +358,17 @@
     "gradient": "blue",
     "types": ["steel", "psychic"],
     "priority": 20
+  },
+  {
+    "name": "Carracosta",
+    "image": "https://wiki.pokexgames.com/images/c/c9/565-Carracosta.png",
+    "boost": "+70",
+    "heldX": "attack_t5",
+    "heldY": "ghost_t4",
+    "inactives": ["return_t5"],
+    "pokeball": "net_ball",
+    "gradient": "blue",
+    "types": ["water", "rock"],
+    "priority": 99
   }
 ]

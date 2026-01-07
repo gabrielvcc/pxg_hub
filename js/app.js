@@ -12,11 +12,12 @@ navItems.forEach(item => {
   });
 });
 
-// PERFIL
+/// PROFILE --------------------------------------------------------------------------------
 Promise.all([
   fetch('data/profile.json').then(r => r.json()),
-  fetch('data/helds.json').then(r => r.json())
-]).then(([profile, helds]) => {
+  fetch('data/helds.json').then(r => r.json()),
+  fetch('data/types.json').then(r => r.json())
+]).then(([profile, helds, types]) => {
 
   // Info básica
   document.getElementById('username').innerText = profile.username;
@@ -32,6 +33,15 @@ Promise.all([
   document.getElementById('pokelog').innerText = profile.stats.pokelog;
   document.getElementById('fishing').innerText = profile.stats.fishing;
   document.getElementById('wins').innerText = profile.stats.wins;
+
+  const mainTypeKey = profile.main_type; // "grass"
+const mainType = types[mainTypeKey];
+
+if (mainType) {
+  const mainTypeImg = document.getElementById('main_type');
+  mainTypeImg.src = mainType.image;
+  mainTypeImg.alt = mainType.name;
+}
 
   // DEVICE
 
@@ -57,26 +67,35 @@ Promise.all([
 
 profile.metas.forEach(meta => {
   const card = document.createElement('div');
-  card.classList.add('meta-card', meta.status);
+  card.classList.add('meta-card', meta.status, 'clickable');
 
-  if (meta.status === 'completed' && meta.link) {
-    card.classList.add('clickable');
-    card.addEventListener('click', () => {
-      document.querySelector('[data-page="conquistas"]').click();
-      if (meta.link.includes('#')) {
-        setTimeout(() => {
-          location.hash = meta.link.split('#')[1];
-        }, 200);
-      }
-    });
+  card.addEventListener('click', () => {
+  document.querySelector('[data-page="conquistas"]').click();
+  setTimeout(() => {
+    openConquistaById(meta.link);
+  }, 200);
+});
+
+function openConquistaById(id) {
+  const conquista = CONQUISTAS_DATA.find(c => c.id === id);
+
+  if (!conquista) {
+    console.warn('Conquista não encontrada:', id);
+    return;
   }
 
+  openConquista(conquista);
+}
+
+
+
   card.innerHTML = `
-    <img src="${meta.image}" class="meta-image">
+    <div class="meta-image-wrapper">
+      <img src="${meta.image}" class="meta-image">
+    </div>
 
     <div class="meta-info">
       <div class="meta-title">${meta.title}</div>
-
       ${
         meta.status === 'progress'
           ? `<div class="meta-progress">
@@ -84,8 +103,11 @@ profile.metas.forEach(meta => {
               ${meta.progress.label}
             </div>`
           : `<div class="meta-complete">Concluído</div>`
+          
       }
     </div>
+    <img src="/assets/icons/arrow leftdown-rightup.png" class="meta-arrow" alt="Ver conquista"/>
+
   `;
 
   metasContainer.appendChild(card);
@@ -246,3 +268,73 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// CONQUISTAS --------------------------------------------------------------------------
+
+let CONQUISTAS_DATA = [];
+
+fetch('data/conquistas.json')
+  .then(res => res.json())
+  .then(data => {
+    CONQUISTAS_DATA = data;
+    renderConquistasList();
+  });
+
+  function renderConquistasList() {
+  const header = document.getElementById('conquistasHeader');
+  const content = document.getElementById('conquistasContent');
+
+  // Header padrão
+  header.innerHTML = `<h1>Conquistas</h1>`;
+
+  // Conteúdo volta a ser o board
+  content.innerHTML = `
+    <div class="conquistas-board" id="conquistasBoard"></div>
+  `;
+
+  const board = document.getElementById('conquistasBoard');
+
+  CONQUISTAS_DATA.forEach(c => {
+    const card = document.createElement('div');
+
+    const gradientClass = c.gradient
+  ? `gradient-${c.gradient}`
+  : 'gradient-green';
+  
+    card.className = `conquista-card gradient-${c.gradient}`;
+    card.dataset.id = c.id;
+
+    card.innerHTML = `
+      <img src="${c.image}">
+      <h3 class="gradient-text ${gradientClass}">${c.title}</h3>
+      <p>${c.description}</p>
+    `;
+
+    card.addEventListener('click', () => openConquista(c));
+    board.appendChild(card);
+  });
+}
+
+async function openConquista(conquista) {
+  const header = document.getElementById('conquistasHeader');
+  const content = document.getElementById('conquistasContent');
+
+  // Header vira "Voltar + título"
+  header.innerHTML = `
+    <button class="back-btn"><img src="/assets/icons/left.png" alt="Seta" class="back-icon">Voltar</button>
+  `;
+
+  header.querySelector('.back-btn').addEventListener('click', () => {
+    renderConquistasList();
+  });
+
+  // Conteúdo vira o viewer
+  content.innerHTML = `<div class="conquista-viewer">Carregando...</div>`;
+
+  const md = await fetch(`${conquista.file}`).then(r => r.text());
+
+  content.innerHTML = `
+    <div class="conquista-viewer">
+      ${marked.parse(md)}
+    </div>
+  `;
+}

@@ -2,8 +2,16 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Pxg is Life</title>
+  <title>Palitou Pxg Profile</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="/favicon.png" type="image/png">
+    <meta property="og:title" content="PXG Palitou Profile" />
+    <meta property="og:description" content="Este é um resumo da minha conta na Pxg, conquistas, pokemons, metas, etc." />
+    <meta property="og:image" content="https://pxg.gabrielvc.com.br/image-preview.png" />
+    <meta property="og:url" content="https://pxg.gabrielvc.com.br" />
+    <meta property="og:site_name" content="Palitou Pxg Profile" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
 </head>
 <body>
 
@@ -21,9 +29,21 @@
     <nav>
       <div class="nav-item active" data-page="profile">Perfil</div>
       <div class="nav-item" data-page="team">Team</div>
-      <div class="nav-item" data-page="achievements">Conquistas</div>
-      <div class="nav-item" data-page="loot">Loot</div>
+      <div class="nav-item" data-page="conquistas">Conquistas</div>
+      <div class="nav-item" data-page="makers">Makers</div>
+      <div class="nav-item" data-page="hunt">Hunt Analyzer</div>
+      <div class="nav-item" data-page="logs">Updates/Logs</div>
     </nav>
+    <div id="bottom-bar">
+  <p>
+    developed by
+    <a href="https://github.com/gabrielvcc" target="_blank" rel="noopener">
+      gabrielvc
+    </a>
+    | <a href="https://forum.pokexgames.com/members/184228-Palitou" target="_blank" rel="noopener">Palitou</a>
+  </p>
+</div>
+
   </aside>
 
   <!-- CONTEÚDO PRINCIPAL -->
@@ -31,12 +51,14 @@
 
     <!-- PERFIL -->
     <section class="page active" id="profile">
-
       <div class="profile-header">
         <img id="avatar" class="avatar">
         <div class="profile-info">
           <h1 id="username"></h1>
           <span id="title"></span>
+        </div>
+        <div class="profile-element-wrapper">
+          <img id="main_type" class="profile-element">
         </div>
       </div>
 
@@ -64,26 +86,46 @@
     <section class="page" id="team">
         <h1>Team</h1>
           <div class="view-toggle">
-            <button class="view-btn active" data-view="grid" title="Modo grade">☷</button>
-            <button class="view-btn" data-view="list" title="Modo lista">☰</button>
+            <button class="view-btn active" data-view="grid" title="Modo grade"><img src="/assets/icons/grid.png" class="grid-icon" alt="Grade"></button>
+            <button class="view-btn" data-view="list" title="Modo lista"><img src="/assets/icons/menu.png" class="list-icon" alt="Lista"></button>
           </div>
         <div class="team-grid" id="teamGrid"></div>
     </section>
 
 
     <!-- CONQUISTAS -->
-    <section class="page" id="achievements">
+    <section class="page" id="conquistas">
+      <div class="conquistas-header" id="conquistasHeader">
       <h1>Conquistas</h1>
+      </div>
+      <div class="conquistas-content" id="conquistasContent">
+        <div class="conquistas-board" id="conquistasBoard"></div>
+      </div>
+</section>
+
+    <!-- MAKERS -->
+    <section class="page" id="makers">
+      <h1>Makers</h1>
+      🚧 em construção... 🚧
     </section>
 
     <!-- LOOT -->
-    <section class="page" id="loot">
-      <h1>Loot / Cash Log</h1>
+    <section class="page" id="hunt">
+      <h1>Hunt Analyzer</h1>
+      🚧 em construção... 🚧
+    </section>
+
+    <!-- UPDATES/LOGS -->
+    <section class="page" id="logs">
+      <h1>Updates / Logs</h1>
+      🚧 em construção... 🚧
     </section>
 
   </main>
 </div>
 
 <script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 </body>
 </html>

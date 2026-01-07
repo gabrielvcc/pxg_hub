@@ -1,0 +1,18 @@
+[
+  {
+    "id": "shiny_charm",
+    "title": "Shiny Charm",
+    "description": "7/65 frags - last update 18/12/2025 ",
+    "image": "https://wiki.pokexgames.com/images/8/82/Shiny-charm.png",
+    "file": "/data/conquistas/shiny_charm.md",
+    "gradient": "blue"
+  },
+  {
+    "id": "chosen_one",
+    "title": "The Chosen One Quest",
+    "description": "Done dia 09/11/2025 ",
+    "image": "https://wiki.pokexgames.com/images/0/0c/249-Lugia.png",
+    "file": "/data/conquistas/the_chosen_one_quest.md",
+    "gradient": "blue"
+  }
+]
