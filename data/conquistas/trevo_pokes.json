@@ -1,0 +1,105 @@
+{
+    "id": "trevo_pokes",
+    "title": "Pokemons do Trevo",
+    "weeks": [
+    {
+        "week": 1,
+        "pokemons": [
+        {
+            "name": "Emolga",
+            "image": "https://wiki.pokexgames.com/images/a/ab/587-Emolga.png",
+            "max": 38,
+            "balls": "0",
+            "captured": false
+        },
+        {
+            "name": "Timburr",
+            "image": "https://wiki.pokexgames.com/images/2/2b/532-Timburr.png",
+            "max": 28,
+            "balls": 3,
+            "captured": true
+        },
+        {
+            "name": "Gurdurr",
+            "image": "https://wiki.pokexgames.com/images/9/9e/533-Gurdurr.png",
+            "max": 38,
+            "balls": 11,
+            "captured": false
+        }
+        ]
+    },
+    {
+        "week": 2,
+        "pokemons": [
+        {
+            "name": "Skorupi",
+            "image": "https://wiki.pokexgames.com/images/5/5d/451-Skorupi.png",
+            "max": 76,
+            "balls": 11,
+            "captured": true
+        },
+        {
+            "name": "Drapion",
+            "image": "https://wiki.pokexgames.com/images/5/5d/451-Skorupi.png",
+            "max": 76,
+            "balls": 11,
+            "captured": true
+        }
+        ]
+    },
+    {
+        "week": 3,
+        "pokemons": []
+    },
+    {
+        "week": 5,
+        "pokemons": []
+    },
+    {
+        "week": 6,
+        "pokemons": []
+    },
+    {
+        "week": 7,
+        "pokemons": []
+    },
+    {
+        "week": 9,
+        "pokemons": []
+    },
+    {
+        "week": 10,
+        "pokemons": []
+    },
+    {
+        "week": 11,
+        "pokemons": []
+    },
+    {
+        "week": "Bronze",
+        "pokemons": [
+        {
+            "name": "Axew",
+            "image": "https://wiki.pokexgames.com/images/4/4d/610-Axew.png",
+            "max": 73,
+            "balls": 12,
+            "captured": true
+        },
+        {
+            "name": "Fraxure",
+            "image": "https://wiki.pokexgames.com/images/6/66/611-Fraxure.png",
+            "max": 76,
+            "balls": 25,
+            "captured": false
+        },
+        {
+            "name": "Haxorus",
+            "image": "https://wiki.pokexgames.com/images/6/6e/612-Haxorus.png",
+            "max": 78,
+            "balls": 25,
+            "captured": false
+        }
+        ]
+    }
+    ]
+}

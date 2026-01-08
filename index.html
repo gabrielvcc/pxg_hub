@@ -20,7 +20,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-    <div class="logo-text">Palitou</div>
+    <div class="logo-text"><span class="gradient-text gradient-green">Palitou</span></div>
     <div class="logo-icon">
       <img src="/assets/imgs/imgprof.jpg" alt="PXG Icon">
     </div>
@@ -54,25 +54,18 @@
       <div class="profile-header">
         <img id="avatar" class="avatar">
         <div class="profile-info">
-          <h1 id="username"></h1>
+          <div class="profile-name-row">
+            <h1 id="username"></h1>
+            <div class="profile-types">
+              <img id="main_type" class="profile-type-icon" />
+            </div>
+          </div>
           <span id="title"></span>
-        </div>
-        <div class="profile-element-wrapper">
-          <img id="main_type" class="profile-element">
         </div>
       </div>
 
       <!-- STATS (IGUAL AO PXG) -->
-      <div class="stats-grid">
-        <div class="stat"><span>Level</span><b id="level"></b></div>
-        <div class="stat"><span>Capturas</span><b id="captures"></b></div>
-        <div class="stat"><span>Profissão</span><b id="profession"></b></div>
-        <div class="stat"><span>NW Level</span><b id="nightmare"></b></div>
-        <div class="stat"><span>Achievements</span><b id="achievements"></b></div>
-        <div class="stat"><span>Pokélog Points</span><b id="pokelog"></b></div>
-        <div class="stat"><span>Fishing</span><b id="fishing"></b></div>
-        <div class="stat"><span>Official Wins</span><b id="wins"></b></div>
-      </div>
+      <div class="stats-grid" id="statsGrid"></div>
 
       <!-- ITENS DO CHAR -->
       <h2 class="section-title">Device</h2>

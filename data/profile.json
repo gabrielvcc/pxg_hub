@@ -4,15 +4,49 @@
   "avatar": "/assets/imgs/Profile-pxg.png",
   "main_type": "grass",
 
-  "stats": {
-    "level": 602,
-    "captures": 308,
-    "profession": 120,
-    "nightmare": 93,
-    "achievements": 343,
-    "pokelog": 1821,
-    "fishing": 86,
-    "wins": 3
+"stats": {
+  "level": {
+    "label": "Level",
+    "value": 602,
+    "icon": "/assets/var/level-up4.png",
+    "gradient": "grass"
+  },
+  "captures": {
+    "label": "Capturas",
+    "value": 308,
+    "icon": "/assets/var/pokeball-icon2.png",
+    "gradient": "red"
+  },
+  "profession": {
+    "label": "Arqueólogo",
+    "value": 120,
+    "icon": "https://wiki.pokexgames.com/images/3/3d/Hidden_Relic.png",
+    "gradient": "gold"
+  },
+  "nightmare": {
+    "label": "Nightmare Level",
+    "value": 93,
+    "icon": "/assets/pokemon/578_Darkrai.png",
+    "gradient": "purple"
+  },
+  "achievements": {
+    "label": "Conquistas",
+    "value": 343,
+    "icon": "/assets/var/achievements.png",
+    "gradient": "gold"
+  },
+  "pokelog": {
+    "label": "Pokélog",
+    "value": 1821,
+    "icon": "/assets/var/pokelog.png",
+    "gradient": "red"
+  },
+  "fishing": {
+    "label": "Fishing",
+    "value": 86,
+    "icon": "/assets/var/magikarp-fake.png",
+    "gradient": "blue"
+  }
   },
   "device": ["critical_t8_device", "block_t8_device"],
 
@@ -30,11 +64,23 @@
       }
     },
     {
-      "id": "chosen",
+      "id": "chosen_one",
       "title": "The Chosen One Quest",
       "image": "https://wiki.pokexgames.com/images/0/0c/249-Lugia.png",
       "status": "completed",
-      "link": "conquistas#nightmare"
+      "link": "chosen_one"
+    },
+    {
+      "id": "trevo",
+      "title": "Trevo - Joey Quest",
+      "image": "https://wiki.pokexgames.com/images/e/e1/Four_Leaf_Clover.gif",
+      "status": "progress",
+      "link": "trevo",
+      "progress": {
+        "current": 29,
+        "total": 38,
+        "label": "pokémons"
+      }
     }
   ]
 }

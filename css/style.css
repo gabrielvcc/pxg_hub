@@ -12,6 +12,8 @@
   --bg-dark: #0b0b10;
   --bg-card: #14141e;
   --border-soft: #26263a;
+
+  --sidebar-width: 260px;
 }
 
 @keyframes gradientMove {
@@ -27,7 +29,8 @@
     90deg,
     #22c55e,
     #4ade80,
-    #d4af37
+    #d4af37,
+    #16a34a
   );
 }
 .gradient-blue {
@@ -50,7 +53,7 @@
     #ef4444,
     #f97316,
     #dc2626,
-    #d4af37
+    #ffffff
   );
 }
 
@@ -73,8 +76,8 @@
     90deg,
     #facc15,
     #f59e0b,
-    #fde047,
-    #d4af37
+    #ffffff,
+    #fde047
   );
 }
 
@@ -116,11 +119,11 @@ body {
 
 .content::after {
   content: '';
-  position: absolute;
+  position: fixed;
   z-index: -1;
 
   top: 50%;
-  left: 50%;
+  left: calc(50% + var(--sidebar-width) / 2);
 
   width: 600px;
   height: 500px;
@@ -284,8 +287,17 @@ body {
   height: 140px;
   border-radius: 14px;
   object-fit: cover;
-  box-shadow: 0 0 12px var(--accent-glow);
+  background: transparent;
+  border: none;
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
 }
+
+.avatar:hover {
+  transform: scale(1.15);
+}
+
 
 .profile-info h1 {
   font-size: 28px;
@@ -311,9 +323,21 @@ body {
   z-index: 2;
 }
 
-.profile-element-wrapper {
-  transform: translateX(-60px);
-  transform: translatey(-15px);
+.profile-name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.profile-types {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px; /* ajusta altura em relação ao nome */
+}
+
+.profile-type-icon {
+  width: 22px;
+  height: 22px;
 }
 
 /* STATS GRID */
@@ -324,31 +348,62 @@ body {
   gap: 18px;
 }
 
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
 .stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
   background: linear-gradient(145deg, #14141e, #1c1c2b);
   border-radius: 14px;
-  padding: 18px;
-  text-align: center;
-  box-shadow: inset 0 0 0 1px #26263a;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px #24243a;
 }
 
 .stat:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 12px  var(--accent-glow-soft);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px rgba(34, 197, 94, 0.8),
+    0 0 20px rgba(34, 197, 94, 0.35);
 }
 
-.stat span {
-  display: block;
-  color: var(--accent-soft);
-  font-size: 14px;
-  margin-bottom: 6px;
+.stat-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.stat b {
-  font-size: 24px;
-  color: #fff;
+.stat-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  margin-left: 10px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
 
 /* SECTION TITLE */
 .section-title {
@@ -863,9 +918,97 @@ body {
   padding: 3px 8px;
 }
 
+/* ------  TREVO  ------- */
 
+.tabela-mestre {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 1px solid rgba(255,255,255,0.5);
+}
 
+.tabela-mestre td {
+  height: auto;
+}
 
+.bloco-semana {
+  height: 100%;
+  justify-content: baseline;
+  vertical-align: top;
+  border: 1px solid rgba(255,255,255,0.5);
+}
 
+.titulo-semana {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+  height: 30px;
+  color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+}
 
+.tabela-semana {
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.tabela-semana th {
+  font-size: 12px;
+  padding: 6px 10px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.tabela-semana td {
+  padding: 0px 8px;
+  text-align: center;
+  justify-content: center;
+}
+
+.tabela-semana td img {
+  width: 32px;
+  image-rendering: pixelated;
+}
+
+.tabela-semana input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ffffff;
+  border-radius: 3px;
+  background: transparent;
+  position: relative;
+  cursor: default;
+}
+
+.tabela-semana input[type="checkbox"]:checked {
+  background: linear-gradient(
+    90deg,
+    #facc15,
+    #f59e0b,
+    #ffffff,
+    #fde047
+  );
+  border-color: linear-gradient(
+    90deg,
+    #facc15,
+    #f59e0b,
+    #ffffff,
+    #fde047
+  );
+}
+
+.tabela-semana input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #0b0b10;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
 

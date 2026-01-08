@@ -25,14 +25,30 @@ Promise.all([
   document.getElementById('avatar').src = profile.avatar;
 
   // Stats
-  document.getElementById('level').innerText = profile.stats.level;
-  document.getElementById('captures').innerText = profile.stats.captures;
-  document.getElementById('profession').innerText = profile.stats.profession;
-  document.getElementById('nightmare').innerText = profile.stats.nightmare;
-  document.getElementById('achievements').innerText = profile.stats.achievements;
-  document.getElementById('pokelog').innerText = profile.stats.pokelog;
-  document.getElementById('fishing').innerText = profile.stats.fishing;
-  document.getElementById('wins').innerText = profile.stats.wins;
+
+  const statsGrid = document.getElementById('statsGrid');
+
+Object.values(profile.stats).forEach(stat => {
+  const statEl = document.createElement('div');
+  statEl.className = 'stat';
+
+  const gradientClass = stat.gradient
+    ? `gradient-${stat.gradient}`
+    : 'gradient-green';
+
+  statEl.innerHTML = `
+    <div class="stat-icon">
+      <img src="${stat.icon}" alt="${stat.label}">
+    </div>
+
+    <div class="stat-info">
+      <span class="stat-label gradient-text ${gradientClass}">${stat.label}</span>
+      <b class="stat-value">${stat.value}</b>
+    </div>
+  `;
+
+  statsGrid.appendChild(statEl);
+});
 
   const mainTypeKey = profile.main_type; // "grass"
 const mainType = types[mainTypeKey];
@@ -62,19 +78,72 @@ if (mainType) {
   });
 
   // METAS
+  
+  let CONQUISTAS_DATA = [];
 
+fetch('data/conquistas.json')
+  .then(res => res.json())
+  .then(data => {
+    CONQUISTAS_DATA = data;
+
+    renderConquistasList();
+
+    if (window.renderMetasFromProfile) {
+      window.renderMetasFromProfile();
+    }
+  });
+
+window.renderMetasFromProfile = function () {
   const metasContainer = document.getElementById('metasS');
+  metasContainer.innerHTML = '';
 
-profile.metas.forEach(meta => {
-  const card = document.createElement('div');
-  card.classList.add('meta-card', meta.status, 'clickable');
+  profile.metas.forEach(meta => {
+    const card = document.createElement('div');
+    card.classList.add('meta-card', meta.status, 'clickable');
 
-  card.addEventListener('click', () => {
-  document.querySelector('[data-page="conquistas"]').click();
-  setTimeout(() => {
-    openConquistaById(meta.link);
-  }, 200);
-});
+    card.addEventListener('click', () => {
+      document.querySelector('[data-page="conquistas"]').click();
+      setTimeout(() => {
+        openConquistaById(meta.link);
+      }, 200);
+    });
+
+    const conquistaRef = CONQUISTAS_DATA.find(c => c.id === meta.link);
+
+    const gradientClass = conquistaRef?.gradient
+      ? `gradient-${conquistaRef.gradient}`
+      : 'gradient-green';
+
+    card.innerHTML = `
+      <div class="meta-image-wrapper">
+        <img src="${meta.image}" class="meta-image">
+      </div>
+
+      <div class="meta-info">
+        <div class="meta-title gradient-text ${gradientClass}">
+          ${meta.title}
+        </div>
+
+        ${
+          meta.status === 'progress'
+            ? `<div class="meta-progress">
+                Em progresso - ${meta.progress.current}/${meta.progress.total}
+                ${meta.progress.label}
+              </div>`
+            : `<div class="meta-complete">Concluído</div>`
+        }
+      </div>
+
+      <img
+        src="/assets/icons/arrow leftdown-rightup.png"
+        class="meta-arrow"
+        alt="Ver conquista"
+      />
+    `;
+
+    metasContainer.appendChild(card);
+  });
+};
 
 function openConquistaById(id) {
   const conquista = CONQUISTAS_DATA.find(c => c.id === id);
@@ -86,32 +155,6 @@ function openConquistaById(id) {
 
   openConquista(conquista);
 }
-
-
-
-  card.innerHTML = `
-    <div class="meta-image-wrapper">
-      <img src="${meta.image}" class="meta-image">
-    </div>
-
-    <div class="meta-info">
-      <div class="meta-title">${meta.title}</div>
-      ${
-        meta.status === 'progress'
-          ? `<div class="meta-progress">
-              Em progresso - ${meta.progress.current}/${meta.progress.total}
-              ${meta.progress.label}
-            </div>`
-          : `<div class="meta-complete">Concluído</div>`
-          
-      }
-    </div>
-    <img src="/assets/icons/arrow leftdown-rightup.png" class="meta-arrow" alt="Ver conquista"/>
-
-  `;
-
-  metasContainer.appendChild(card);
-});
 
 });
 
@@ -276,8 +319,14 @@ fetch('data/conquistas.json')
   .then(res => res.json())
   .then(data => {
     CONQUISTAS_DATA = data;
+
     renderConquistasList();
+
+    if (window.renderMetasFromProfile) {
+      window.renderMetasFromProfile();
+    }
   });
+
 
   function renderConquistasList() {
   const header = document.getElementById('conquistasHeader');
@@ -336,5 +385,72 @@ async function openConquista(conquista) {
     <div class="conquista-viewer">
       ${marked.parse(md)}
     </div>
+  `;
+
+  if (conquista.id === 'trevo') {
+    loadTrevoPokes();
+  }
+}
+
+// TREVO
+
+async function loadTrevoPokes() {
+  const res = await fetch('/data/conquistas/trevo_pokes.json');
+  const data = await res.json();
+
+  const grid = document.getElementById('trevo-pokes-grid');
+  grid.innerHTML = '';
+
+  let row;
+
+  data.weeks.forEach((week, index) => {
+    // cria nova linha a cada 3 semanas
+    if (index % 3 === 0) {
+      row = document.createElement('tr');
+      grid.appendChild(row);
+    }
+
+    const cell = document.createElement('td');
+    cell.className = 'bloco-semana';
+
+    cell.innerHTML = `
+      <div class="titulo-semana">Semana ${week.week}</div>
+      ${renderTabelaSemana(week.pokemons)}
+    `;
+
+    row.appendChild(cell);
+  });
+}
+
+function renderTabelaSemana(pokemons) {
+  if (!pokemons.length) {
+    return `<div class="sem-pokemons">—</div>`;
+  }
+
+  return `
+    <table class="tabela-semana">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Pokémon</th>
+          <th>Máx</th>
+          <th></th>
+          <th>Balls</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${pokemons.map(p => `
+          <tr class="${p.captured ? 'capturado' : ''}">
+            <td><img src="${p.image}" width="22"></td>
+            <td>${p.name}</td>
+            <td>${p.max}</td>
+            <td>
+              <input type="checkbox" ${p.captured ? 'checked' : ''} disabled>
+            </td>
+            <td>${p.balls}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
   `;
 }
