@@ -739,6 +739,18 @@ body {
   display: block;
 }
 
+.tooltip-target {
+  cursor: help;
+}
+
+#global-tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  height: 32px;
+}
+
+
 /* INACTIVES */
 .inactives {
   margin-top: 10px;
@@ -928,52 +940,99 @@ body {
 }
 
 .tabela-mestre td {
-  height: auto;
+  padding: 0;
 }
 
+/* =========================
+   BLOCO DA SEMANA
+========================= */
 .bloco-semana {
-  height: 100%;
-  justify-content: baseline;
   vertical-align: top;
-  border: 1px solid rgba(255,255,255,0.5);
+  border-left: 1px solid rgba(255,255,255,0.8);
+  border-right: 1px solid rgba(255,255,255,0.8);
+  border-top: 1px solid rgba(255,255,255,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.8);
 }
 
+/* =========================
+   TÍTULO DA SEMANA
+========================= */
 .titulo-semana {
+  height: 32px;
+  line-height: 32px;
   font-size: 16px;
-  text-align: center;
   font-weight: 600;
-  height: 30px;
+  text-align: center;
   color: white;
   border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 
 .tabela-semana {
   width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
   font-size: 14px;
-  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.tabela-semana {
+  width: 100%;
+  table-layout: fixed;
 }
 
 .tabela-semana th {
-  font-size: 12px;
-  padding: 6px 10px;
+  height: 32px;
+  font-size: 14px;
   text-align: center;
   color: #ffffff;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  border-right: 1px solid rgba(255,255,255,0.5);
+}
+
+.tabela-semana th:last-child {
+  border-right: none;
+}
+
+.tabela-semana tr {
+  height: 32px;
 }
 
 .tabela-semana td {
-  padding: 0px 8px;
+  height: 28px;
+  padding: 0 6px;
   text-align: center;
-  justify-content: center;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 
+.tabela-semana td:last-child {
+  border-right: none;
+}
+
+.tabela-semana tbody tr:last-child {
+  border-bottom: hidden;
+}
+
+.tabela-semana .fechar tr:last-child {
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+
+
 .tabela-semana td img {
-  width: 32px;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 0 auto;
   image-rendering: pixelated;
 }
 
 .tabela-semana input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
+  pointer-events: none;
   width: 16px;
   height: 16px;
   border: 1px solid #ffffff;
@@ -1012,3 +1071,38 @@ body {
   transform: rotate(45deg);
 }
 
+/* =========================
+   LARGURA DAS COLUNAS
+========================= */
+
+/* Ícone */
+.tabela-semana th:nth-child(1),
+.tabela-semana td:nth-child(1) {
+  width: 40px;
+}
+
+/* Pokémon (nome) */
+.tabela-semana th:nth-child(2),
+.tabela-semana td:nth-child(2) {
+  width: 45%;
+  text-align: left;
+  padding-left: 8px;
+}
+
+/* Máx */
+.tabela-semana th:nth-child(3),
+.tabela-semana td:nth-child(3) {
+  width: 50px;
+}
+
+/* Checkbox (menor) */
+.tabela-semana th:nth-child(4),
+.tabela-semana td:nth-child(4) {
+  width: 34px;
+}
+
+/* Balls */
+.tabela-semana th:nth-child(5),
+.tabela-semana td:nth-child(5) {
+  width: 70px;
+}

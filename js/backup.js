@@ -388,7 +388,7 @@ async function openConquista(conquista) {
       ${marked.parse(md)}
     </div>
   `;
-  await processHtmlIncludes(content);
+  processHtmlIncludes(content);
 
 }
 
@@ -401,6 +401,14 @@ async function processHtmlIncludes(container = document) {
     const html = await fetch(file).then(r => r.text());
     el.innerHTML = html;
   }
+  content.innerHTML = `
+  <div class="conquista-viewer">
+    ${marked.parse(md)}
+  </div>
+`;
+
+processHtmlIncludes(content);
+
 }
 
 let globalTooltip = null;
@@ -426,9 +434,6 @@ document.addEventListener('mouseover', e => {
 
   globalTooltip.innerHTML = text;
   globalTooltip.style.display = 'block';
-  globalTooltip.style.left = '0px';
-  globalTooltip.style.right = 'auto';
-  globalTooltip.style.transform = 'translateX(20%)';
 
   const rect = target.getBoundingClientRect();
   const tooltipRect = globalTooltip.getBoundingClientRect();

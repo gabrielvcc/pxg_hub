@@ -11,11 +11,11 @@
     "icon": "/assets/var/level-up4.png",
     "gradient": "grass"
   },
-  "captures": {
-    "label": "Capturas",
-    "value": 308,
-    "icon": "/assets/var/pokeball-icon2.png",
-    "gradient": "red"
+  "nightmare": {
+    "label": "Nightmare Level",
+    "value": 93,
+    "icon": "/assets/pokemon/578_Darkrai.png",
+    "gradient": "purple"
   },
   "profession": {
     "label": "Arqueólogo",
@@ -23,11 +23,11 @@
     "icon": "https://wiki.pokexgames.com/images/3/3d/Hidden_Relic.png",
     "gradient": "gold"
   },
-  "nightmare": {
-    "label": "Nightmare Level",
-    "value": 93,
-    "icon": "/assets/pokemon/578_Darkrai.png",
-    "gradient": "purple"
+  "captures": {
+    "label": "Capturas",
+    "value": 308,
+    "icon": "/assets/var/pokeball-icon2.png",
+    "gradient": "red"
   },
   "achievements": {
     "label": "Conquistas",
