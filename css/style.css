@@ -690,6 +690,158 @@ body {
   color: var(--accent-main);
 }
 
+.view-grid .pokemon-card {
+  perspective: 1000px;
+}
+
+.view-grid .card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+}
+
+.view-grid .card-face {
+  backface-visibility: hidden;
+}
+
+.view-grid .card-front {
+  position: relative;
+  backface-visibility: hidden;
+}
+
+.view-grid .card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.back-header {
+  align-items:baseline;
+  flex: 0 0 auto;
+  margin-bottom: 2px;
+  margin-top: 8px;
+}
+
+.back-gif-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pokemon-name-back {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.view-grid .pokemon-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* botão de flip */
+.flip-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+
+  background: none;
+  border: none;
+  padding: 0;
+
+  cursor: pointer;
+  z-index: 20;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0.65;
+}
+
+.flip-btn {
+  display: none;
+}
+
+.view-grid .flip-btn {
+  display: block;
+}
+
+
+.flip-btn img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  filter: invert(100%);
+}
+
+.flip-btn:hover {
+  transform: scale(1.10);
+  opacity: 1;
+  image-rendering: auto;
+}
+
+
+.pokemon-card {
+  position: relative;
+}
+
+/* nome no verso */
+.back-name {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* gif */
+.poke-gif {
+  width: auto;
+  height: 90%;
+}
+
+.view-list .card-inner {
+  transform: none !important;
+  height: auto;
+}
+
+.view-list .card-back {
+  display: none;
+}
+
+.view-list .card-front {
+  position: relative;
+  inset: auto;
+  backface-visibility: visible;
+}
+
+.view-list .pokemon-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+}
+
+.view-list .card-front {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+
+  position: static;
+  inset: auto;
+}
+
 /* HELDS */
 .helds {
   display: flex;

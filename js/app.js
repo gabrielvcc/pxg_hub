@@ -159,6 +159,8 @@ function openConquistaById(id) {
 
 });
 
+// TEAM
+
 teamGrid.classList.add('view-grid');
 
   Promise.all([
@@ -200,8 +202,6 @@ const typeIcons = (poke.types || [])
   })
   .join('');
 
-//  HELDS X/Y
-
     const allHelds = [
     poke.heldX,
     poke.heldY,
@@ -213,39 +213,117 @@ const typeIcons = (poke.types || [])
   : 'gradient-green';
 
     card.innerHTML = `
+  <div class="card-inner">
+
+    <!-- FRENTE -->
+    <div class="card-face card-front">
       <div class="pokemon-header">
         <img src="${poke.image}" class="poke-img">
         <div class="pokemon-types">${typeIcons}</div>
       </div>
 
-      <div class="pokemon-name gradient-text ${gradientClass}">${poke.name}</div>
-      <div class="pokemon-boost gradient-text ${gradientClass}">${poke.boost}</div>
+      <div class="pokemon-name gradient-text ${gradientClass}">
+        ${poke.name}
+      </div>
+
+      <div class="pokemon-boost gradient-text ${gradientClass}">
+        ${poke.boost}
+      </div>
 
       <div class="helds">
-  ${allHelds.map(key => {
-    const item = helds[key];
-    if (!item) return '';
-
-    return `
-      <div class="held">
-        <img src="${item.image}">
-        <div class="tooltip">
-          <b>${item.name}</b><br>${item.description}
-        </div>
+        ${allHelds.map(key => {
+          const item = helds[key];
+          if (!item) return '';
+          return `
+            <div class="held">
+              <img src="${item.image}">
+              <div class="tooltip">
+                <b>${item.name}</b><br>${item.description}
+              </div>
+            </div>
+          `;
+        }).join('')}
       </div>
-    `;
-  }).join('')}
-</div>
+
       <div class="pokeball">
         <img src="${pokeballs[poke.pokeball].image}">
         <div class="tooltip">
           <b>${pokeballs[poke.pokeball].name}</b>
         </div>
       </div>
-    `;
+    </div>
+
+    <!-- VERSO -->
+    <div class="card-face card-back">
+      <div class="back-header">
+        <span class="pokemon-name-back gradient-text ${gradientClass}">
+          ${poke.name}
+        </span>
+      </div>
+    <div class="back-gif-wrapper">
+      <img 
+        src="/assets/ingame_gifs/${poke.name}.gif" 
+        class="poke-gif"
+        loading="lazy"
+      >
+      </div>
+  </div>
+  </div>
+
+  <button class="flip-btn" title="Virar carta">
+    <img src="/assets/icons/flip32.png">
+  </button>
+`;
+
 
     grid.appendChild(card);
+
+  const gif = card.querySelector('.poke-gif');
+const flipBtns = card.querySelectorAll('.flip-btn');
+
+gif.addEventListener('error', () => {
+  // marca o card como "sem gif"
+  card.classList.add('no-gif');
+
+  // remove botões de flip
+  flipBtns.forEach(btn => btn.remove());
+
+  // remove o verso inteiro (opcional, mas recomendado)
+  const back = card.querySelector('.card-back');
+  if (back) back.remove();
+});
+
   });
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.flip-btn');
+  if (!btn) return;
+
+  // só funciona no modo cards
+  if (!teamGrid.classList.contains('view-grid')) return;
+
+  const card = btn.closest('.pokemon-card');
+  if (card.classList.contains('no-gif')) return;
+  const gif = card.querySelector('.poke-gif');
+  if (!gif) return;
+
+  const wasFlipped = card.classList.contains('flipped');
+
+  card.classList.toggle('flipped');
+
+  // se acabou de virar pro verso
+  if (!wasFlipped) {
+    const src = gif.getAttribute('src');
+
+    // força reinício do gif
+    gif.setAttribute('src', '');
+    requestAnimationFrame(() => {
+      gif.setAttribute('src', src);
+    });
+  }
+});
+
+
 
 });
 document.addEventListener('mouseover', e => {
