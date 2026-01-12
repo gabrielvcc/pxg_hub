@@ -45,6 +45,18 @@
   );
 }
 
+.gradient-bluew {
+  --card-glow: rgba(119, 214, 216, 0.55);
+  --card-glow-strong: rgba(79, 195, 247, 0.8);
+  --text-gradient: linear-gradient(
+    90deg,
+    #77d6d8,
+    #4fc3f7,
+    #ffffff,
+    #b2ebf2
+  );
+}
+
 .gradient-red {
   --card-glow: rgba(239, 68, 68, 0.55);
   --card-glow-strong: rgba(239, 68, 68, 0.8);
