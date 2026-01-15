@@ -12,8 +12,8 @@ navItems.forEach(item => {
   });
 });
 
-
 /// PROFILE --------------------------------------------------------------------------------
+
 Promise.all([
   fetch('data/profile.json').then(r => r.json()),
   fetch('data/helds.json').then(r => r.json()),
@@ -322,10 +322,8 @@ document.addEventListener('click', e => {
     });
   }
 });
-
-
-
 });
+
 document.addEventListener('mouseover', e => {
   const held = e.target.closest('.held, .inactive-item, .pokeball, .type-icon, .tooltip-target');
   if (!held) return;
@@ -360,7 +358,6 @@ document.addEventListener('mouseover', e => {
   });
 });
 
-
 document.addEventListener('mouseout', e => {
   const held = e.target.closest('.held, .inactive-item, .pokeball, .type-icon, .tooltip-target');
   if (!held) return;
@@ -389,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
 
 // CONQUISTAS --------------------------------------------------------------------------
 
@@ -468,6 +464,8 @@ async function openConquista(conquista) {
   `;
   await processHtmlIncludes(content);
 
+  initPhotoViewers(content);
+
 }
 
 // TREVO
@@ -533,3 +531,53 @@ document.addEventListener('mouseout', e => {
 
   globalTooltip.style.display = 'none';
 });
+
+// PHOTO VIEWER (CHOSEN)
+
+function initPhotoViewers(container = document) {
+  container.querySelectorAll('.photo-viewer').forEach(viewer => {
+    const img = viewer.querySelector('.pv-image');
+    const prev = viewer.querySelector('.pv-btn.prev');
+    const next = viewer.querySelector('.pv-btn.next');
+
+    const images = Array.from(
+      viewer.querySelectorAll('.pv-list img')
+    ).map(i => i.src);
+
+    if (!images.length) return;
+
+    let index = 0;
+    img.src = images[index];
+
+    next?.addEventListener('click', () => {
+      index = (index + 1) % images.length;
+      img.src = images[index];
+    });
+
+    prev?.addEventListener('click', () => {
+      index = (index - 1 + images.length) % images.length;
+      img.src = images[index];
+    });
+
+    img.addEventListener('click', () => {
+      openFullscreen(img.src);
+    });
+  });
+}
+
+// fullscreen
+function openFullscreen(src) {
+  const overlay = document.createElement('div');
+  overlay.className = 'pv-fullscreen';
+  overlay.innerHTML = `<img src="${src}">`;
+
+  overlay.addEventListener('click', () => overlay.remove());
+
+  document.addEventListener(
+    'keydown',
+    e => e.key === 'Escape' && overlay.remove(),
+    { once: true }
+  );
+
+  document.body.appendChild(overlay);
+}

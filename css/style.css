@@ -184,7 +184,7 @@ body {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 2px solid #22c55e; /* verde */
+  border: 2px solid #22c55e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -230,7 +230,7 @@ body {
 }
 
 #bottom-bar {
-  margin-top: auto; /* empurra pro fundo */
+  margin-top: auto;
   padding: 16px 12px;
   font-size: 12px;
   text-align: center;
@@ -247,7 +247,7 @@ body {
 }
 
 #bottom-bar a:hover {
-  color: #22c55e; /* verde */
+  color: #22c55e;
 }
 
 #bottom-bar a::after {
@@ -328,7 +328,6 @@ body {
   gap: 20px;
 }
 
-/* garante que avatar + texto fiquem acima */
 .avatar,
 .profile-info {
   position: relative;
@@ -344,7 +343,7 @@ body {
 .profile-types {
   display: flex;
   gap: 6px;
-  margin-top: 4px; /* ajusta altura em relação ao nome */
+  margin-top: 4px;
 }
 
 .profile-type-icon {
@@ -1046,8 +1045,8 @@ body {
 }
 
 .back-icon {
-    width: 18px;         /* Ajuste o tamanho da largura do PNG */
-    height: auto;        /* Mantém a proporção da altura */
+    width: 18px;
+    height: auto;
     filter: invert(100%);
 }
 
@@ -1269,4 +1268,67 @@ body {
 .tabela-semana th:nth-child(5),
 .tabela-semana td:nth-child(5) {
   width: 70px;
+}
+
+.photo-viewer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 900px;
+  margin: 1px auto;
+}
+
+.pv-frame {
+  max-width: 720px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0b0b12;
+  box-shadow: 0 0 40px rgba(0,0,0,.5);
+}
+
+.pv-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: zoom-in;
+}
+
+.pv-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 46px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.pv-btn:hover {
+  transform: scale(1.15);
+}
+
+.pv-counter {
+  position: absolute;
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: .7;
+}
+
+.pv-list {
+  display: none;
+}
+
+.pv-fullscreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.pv-fullscreen img {
+  max-width: 92vw;
+  max-height: 92vh;
+  cursor: zoom-out;
 }
