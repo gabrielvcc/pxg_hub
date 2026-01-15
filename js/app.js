@@ -20,45 +20,57 @@ Promise.all([
   fetch('data/types.json').then(r => r.json())
 ]).then(([profile, helds, types]) => {
 
-  // Info básica
+  // INFO BÁSICA
+
   document.getElementById('username').innerText = profile.username;
   document.getElementById('title').innerText = profile.title;
   document.getElementById('avatar').src = profile.avatar;
 
-  // Stats
+  // PERFIL IN-GAME
+
+  const ingameContainer = document.querySelector('.profile-ingame');
+  const ingamePreview = document.querySelector('.ingame-preview');
+
+  if (profile.ingame_profile_preview) {
+    ingamePreview.src = profile.ingame_profile_preview;
+
+    ingamePreview.addEventListener('click', () => {
+      openIngameModal(profile.ingame_profile_full);
+    });
+
+    ingameContainer.style.display = 'block';
+  } else {
+    ingameContainer.style.display = 'none';
+  }
+
+  // STATS
 
   const statsGrid = document.getElementById('statsGrid');
+  statsGrid.innerHTML = ''; // segurança contra reload
 
-Object.values(profile.stats).forEach(stat => {
-  const statEl = document.createElement('div');
-  statEl.className = 'stat';
+  Object.values(profile.stats).forEach(stat => {
+    const statEl = document.createElement('div');
+    statEl.className = 'stat';
 
-  const gradientClass = stat.gradient
-    ? `gradient-${stat.gradient}`
-    : 'gradient-green';
+    const gradientClass = stat.gradient
+      ? `gradient-${stat.gradient}`
+      : 'gradient-green';
 
-  statEl.innerHTML = `
-    <div class="stat-icon">
-      <img src="${stat.icon}" alt="${stat.label}">
-    </div>
+    statEl.innerHTML = `
+      <div class="stat-icon">
+        <img src="${stat.icon}" alt="${stat.label}">
+      </div>
 
-    <div class="stat-info">
-      <span class="stat-label gradient-text ${gradientClass}">${stat.label}</span>
-      <b class="stat-value">${stat.value}</b>
-    </div>
-  `;
+      <div class="stat-info">
+        <span class="stat-label gradient-text ${gradientClass}">
+          ${stat.label}
+        </span>
+        <b class="stat-value">${stat.value}</b>
+      </div>
+    `;
 
-  statsGrid.appendChild(statEl);
-});
-
-  const mainTypeKey = profile.main_type; // "grass"
-const mainType = types[mainTypeKey];
-
-if (mainType) {
-  const mainTypeImg = document.getElementById('main_type');
-  mainTypeImg.src = mainType.image;
-  mainTypeImg.alt = mainType.name;
-}
+    statsGrid.appendChild(statEl);
+  });
 
   // DEVICE
 
@@ -581,3 +593,41 @@ function openFullscreen(src) {
 
   document.body.appendChild(overlay);
 }
+const ingamePreview = document.querySelector('.ingame-preview');
+const ingameContainer = document.querySelector('.profile-ingame');
+
+if (profile.ingame_profile_preview) {
+  ingamePreview.src = profile.ingame_profile_preview;
+
+  ingameContainer.style.display = 'block';
+
+  ingamePreview.onclick = () => {
+    openIngameModal(profile.ingame_profile_full);
+  };
+} else {
+  ingameContainer.style.display = 'none';
+}
+
+function loadProfile(profile) {
+  document.querySelector('.profile-avatar').src = profile.avatar;
+  document.querySelector('.profile-name').textContent = profile.username;
+  document.querySelector('.profile-title').textContent = profile.title;
+
+  const preview = document.querySelector('.ingame-preview');
+  preview.src = profile.ingame_profile_preview;
+
+  preview.onclick = () => openIngameModal(profile.ingame_profile_full);
+}
+
+function openIngameModal(src) {
+  const modal = document.querySelector('.ingame-modal');
+  const img = modal.querySelector('.ingame-modal-image');
+
+  img.src = src;
+  modal.classList.remove('hidden');
+}
+
+document.querySelector('.ingame-modal-backdrop')
+  .addEventListener('click', () => {
+    document.querySelector('.ingame-modal').classList.add('hidden');
+  });
