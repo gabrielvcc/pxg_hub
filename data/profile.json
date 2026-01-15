@@ -83,6 +83,13 @@
         "total": 38,
         "label": "pokémons"
       }
+    },
+    {
+      "id": "caught_shkrookodile",
+      "title": "Caught Shiny Krookodile",
+      "image": "https://wiki.pokexgames.com/images/a/aa/553-Shiny_Krookodile.png",
+      "status": "completed",
+      "link": "caught_shkrookodile"
     }
   ]
 }

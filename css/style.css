@@ -105,6 +105,19 @@
   );
 }
 
+.gradient-white {
+  --card-glow: rgba(255, 255, 255, 0.4);
+  --card-glow-strong: rgba(236, 236, 236, 0.6); 
+  --text-gradient: linear-gradient(
+    90deg,
+    #ffffff,
+    #8f8f8f,
+    #414141,
+    #ffffff
+    
+  );
+}
+
 * {
   margin: 0;
   padding: 0;

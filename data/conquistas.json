@@ -18,9 +18,18 @@
   {
     "id": "trevo",
     "title": "Trevo - Joey Quest",
-    "description": "29/38 pokemons - last update 03/01/2026 ",
+    "description": "29/38 pokes - last update 03/01/2026 ",
     "image": "https://wiki.pokexgames.com/images/e/e1/Four_Leaf_Clover.gif",
     "file": "/data/conquistas/trevo.md",
     "gradient": "gold"
+  }
+  ,
+  {
+    "id": "caught_shkrookodile",
+    "title": "Caught Shiny Krookodile",
+    "description": "838 brokes - NW ball ",
+    "image": "https://wiki.pokexgames.com/images/a/aa/553-Shiny_Krookodile.png",
+    "file": "/data/conquistas/caught_shkrookodile.md",
+    "gradient": "white"
   }
 ]
