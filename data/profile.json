@@ -3,8 +3,8 @@
   "title": "The Chosen One",
   "avatar": "/assets/ingame_var/me.png",
 
-  "ingame_profile_preview": "/assets/ingame_var/profile_preview.jpeg",
-  "ingame_profile_full": "/assets/ingame_var/profile_full.jpeg",
+  "ingame_profile_preview": "/assets/ingame_var/profile_preview_new.png",
+  "ingame_profile_full": "/assets/ingame_var/profile_full_new.png",
 
 "stats": {
   "level": {
