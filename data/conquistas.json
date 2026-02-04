@@ -22,14 +22,21 @@
     "image": "https://wiki.pokexgames.com/images/e/e1/Four_Leaf_Clover.gif",
     "file": "/data/conquistas/trevo.md",
     "gradient": "gold"
-  }
-  ,
+  },
   {
     "id": "caught_shkrookodile",
     "title": "Caught Shiny Krookodile",
-    "description": "838 brokes - NW ball ",
+    "description": "838 brokes - NW ball",
     "image": "https://wiki.pokexgames.com/images/a/aa/553-Shiny_Krookodile.png",
     "file": "/data/conquistas/caught_shkrookodile.md",
     "gradient": "white"
+  },
+  {
+    "id": "caught_shrampardos",
+    "title": "Caught Shiny Rampardos",
+    "description": "154 brokes - NW ball",
+    "image": "https://wiki.pokexgames.com/images/b/be/409-Shiny_rampardos.png",
+    "file": "/data/conquistas/caught_shrampardos.md",
+    "gradient": "red"
   }
 ]

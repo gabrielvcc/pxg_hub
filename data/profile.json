@@ -90,6 +90,13 @@
       "image": "https://wiki.pokexgames.com/images/a/aa/553-Shiny_Krookodile.png",
       "status": "completed",
       "link": "caught_shkrookodile"
+    },
+    {
+      "id": "caught_shrampardos",
+      "title": "Caught Shiny Rampardos",
+      "image": "https://wiki.pokexgames.com/images/b/be/409-Shiny_rampardos.png",
+      "status": "completed",
+      "link": "caught_shrampardos"
     }
   ]
 }
