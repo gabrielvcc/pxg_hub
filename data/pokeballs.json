@@ -42,5 +42,9 @@
   "janguru_ball": {
     "name": "Janguru Ball",
     "image": "https://wiki.pokexgames.com/images/9/90/Janguru-ball.png"
+  },
+  "nightmare_ball": {
+    "name": "Nightmare Ball",
+    "image": "https://wiki.pokexgames.com/images/e/e3/Nightmare_Ball.png"
   }
 }

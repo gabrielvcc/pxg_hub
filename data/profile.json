@@ -3,8 +3,8 @@
   "title": "The Chosen One",
   "avatar": "/assets/ingame_var/me.png",
 
-  "ingame_profile_preview": "/assets/ingame_var/profile_preview_new.png",
-  "ingame_profile_full": "/assets/ingame_var/profile_full_new.png",
+  "ingame_profile_preview": "/assets/ingame_var/profile_preview_25-02-2026.png",
+  "ingame_profile_full": "/assets/ingame_var/profile_full_25-02-2026.png",
 
 "stats": {
   "level": {
@@ -15,7 +15,7 @@
   },
   "nightmare": {
     "label": "Nightmare Level",
-    "value": 93,
+    "value": 95,
     "icon": "/assets/pokemon/578_Darkrai.png",
     "gradient": "purple"
   },
@@ -27,30 +27,31 @@
   },
   "captures": {
     "label": "Capturas",
-    "value": 308,
+    "value": 323,
     "icon": "/assets/var/pokeball-icon2.png",
     "gradient": "red"
   },
   "achievements": {
     "label": "Conquistas",
-    "value": 343,
+    "value": 384,
     "icon": "/assets/var/achievements.png",
     "gradient": "gold"
   },
   "pokelog": {
     "label": "Pokélog",
-    "value": 1821,
+    "value": 2446,
     "icon": "/assets/var/pokelog.png",
     "gradient": "red"
   },
   "fishing": {
     "label": "Fishing",
-    "value": 86,
+    "value": 90,
     "icon": "/assets/var/magikarp-fake.png",
     "gradient": "blue"
   }
   },
   "device": ["critical_t8_device", "block_t8_device"],
+  "runas": ["sacred"],
 
   "metas": [
     {
@@ -76,10 +77,10 @@
       "id": "trevo",
       "title": "Trevo - Joey Quest",
       "image": "https://wiki.pokexgames.com/images/e/e1/Four_Leaf_Clover.gif",
-      "status": "progress",
+      "status": "completed",
       "link": "trevo",
       "progress": {
-        "current": 29,
+        "current": 38,
         "total": 38,
         "label": "pokémons"
       }

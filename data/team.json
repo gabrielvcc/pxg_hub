@@ -60,6 +60,18 @@
     "priority": 1
   },
   {
+    "name": "Shiny Gogoat",
+    "image": "https://wiki.pokexgames.com/images/5/57/673-Shiny_Gogoat.png",
+    "boost": "+70",
+    "heldX": "attack_t8",
+    "heldY": "ghost_t4",
+    "inactives": [],
+    "pokeball": "nightmare_ball",
+    "gradient": "gold",
+    "types": ["grass"],
+    "priority": 1
+  },
+  {
     "name": "Mega Venusaur",
     "image": "https://wiki.pokexgames.com/images/f/f0/003-MegaVenusaur.png",
     "boost": "+70",

@@ -17,8 +17,9 @@ navItems.forEach(item => {
 Promise.all([
   fetch('data/profile.json').then(r => r.json()),
   fetch('data/helds.json').then(r => r.json()),
+  fetch('data/runas.json').then(r => r.json()),
   fetch('data/types.json').then(r => r.json())
-]).then(([profile, helds, types]) => {
+]).then(([profile, helds, runas, types]) => {
 
   // INFO BÁSICA
 
@@ -85,6 +86,23 @@ Promise.all([
         <img src="${held.image}">
         <div class="tooltip">
           <b>${held.name}</b><br>${held.description}
+        </div>
+      </div>
+    `;
+  });
+
+    // RUNAS
+
+  const runasDiv = document.getElementById('runas');
+  profile.runas.forEach(id => {
+    const runa = runas[id];
+    if (!runa) return;
+
+    runasDiv.innerHTML += `
+      <div class="runa">
+        <img src="${runa.image}">
+        <div class="tooltip">
+          <b>${runa.name}</b><br>${runa.description}
         </div>
       </div>
     `;
@@ -337,7 +355,7 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('mouseover', e => {
-  const held = e.target.closest('.held, .inactive-item, .pokeball, .type-icon, .tooltip-target');
+  const held = e.target.closest('.held, .runa, .inactive-item, .pokeball, .type-icon, .tooltip-target');
   if (!held) return;
 
   const tooltip = held.querySelector('.tooltip');
@@ -371,7 +389,7 @@ document.addEventListener('mouseover', e => {
 });
 
 document.addEventListener('mouseout', e => {
-  const held = e.target.closest('.held, .inactive-item, .pokeball, .type-icon, .tooltip-target');
+  const held = e.target.closest('.held, .runa, .inactive-item, .pokeball, .type-icon, .tooltip-target');
   if (!held) return;
 
   const tooltip = held.querySelector('.tooltip');
