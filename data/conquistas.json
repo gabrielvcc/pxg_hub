@@ -2,7 +2,7 @@
   {
     "id": "shiny_charm",
     "title": "Shiny Charm",
-    "description": "7/65 frags - last update 18/12/2025 ",
+    "description": "7/65 frags - last update 18/12/2025",
     "image": "https://wiki.pokexgames.com/images/8/82/Shiny-charm.png",
     "file": "/data/conquistas/shiny_charm.md",
     "gradient": "blue"
@@ -10,7 +10,7 @@
   {
     "id": "chosen_one",
     "title": "The Chosen One Quest",
-    "description": "Done dia 09/11/2025 ",
+    "description": "Done dia 09/11/2025",
     "image": "https://wiki.pokexgames.com/images/0/0c/249-Lugia.png",
     "file": "/data/conquistas/chosen_one.md",
     "gradient": "bluew"
@@ -18,9 +18,17 @@
   {
     "id": "trevo",
     "title": "Trevo - Joey Quest",
-    "description": "Done dia 07/02/2026 ",
+    "description": "Done dia 07/02/2026",
     "image": "https://wiki.pokexgames.com/images/e/e1/Four_Leaf_Clover.gif",
     "file": "/data/conquistas/trevo.md",
+    "gradient": "gold"
+  },
+  {
+    "id": "critical_catch_charm",
+    "title": "Critical Catch Charm",
+    "description": "Tier 3 - last update 25/02/2026",
+    "image": "https://wiki.pokexgames.com/images/9/94/Critical_catch_charm_Tier_3.png",
+    "file": "/data/conquistas/critical_catch_charm.md",
     "gradient": "gold"
   },
   {

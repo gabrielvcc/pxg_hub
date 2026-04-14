@@ -71,6 +71,30 @@
     "types": ["grass"],
     "priority": 1
   },
+    {
+    "name": "Giant Galvantula",
+    "image": "https://wiki.pokexgames.com/images/9/93/596-G_Galvantula.png",
+    "boost": "+70",
+    "heldX": "attack_t8",
+    "heldY": "ghost_t4",
+    "inactives": [],
+    "pokeball": "tinker_ball",
+    "gradient": "gold",
+    "types": ["bug", "electric"],
+    "priority": 1
+  },
+      {
+    "name": "Shiny Pinsir",
+    "image": "https://wiki.pokexgames.com/images/c/cd/Sh_pinsir.png",
+    "boost": "+70",
+    "heldX": "attack_t8",
+    "heldY": "ghost_t4",
+    "inactives": [],
+    "pokeball": "net_ball",
+    "gradient": "red",
+    "types": ["bug"],
+    "priority": 1
+  },
   {
     "name": "Mega Venusaur",
     "image": "https://wiki.pokexgames.com/images/f/f0/003-MegaVenusaur.png",

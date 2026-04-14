@@ -31,7 +31,7 @@
       <div class="nav-item" data-page="team">Team</div>
       <div class="nav-item" data-page="conquistas">Conquistas</div>
       <div class="nav-item" data-page="makers">Makers</div>
-      <div class="nav-item" data-page="hunt">Hunt Analyzer</div>
+      <div class="nav-item" data-page="profit">Profits</div>
       <div class="nav-item" data-page="logs">Updates/Logs</div>
     </nav>
     <div id="bottom-bar">
@@ -114,16 +114,39 @@
       🚧 em construção... 🚧
     </section>
 
-    <!-- LOOT -->
-    <section class="page" id="hunt">
-      <h1>Hunt Analyzer</h1>
-      🚧 em construção... 🚧
+    <!-- PROFIT -->
+    <section class="page" id="profit">
+      <h1>Dashboard de Profits</h1>
+      <script type="module" src="/js/firebase.js"></script>
+      <script type="module" src="/js/profit.js"></script>
+      <button id="loginBtn">Login</button>
+      <div class="insert-panel">
+
+  <h2>Inserir Profit</h2>
+
+  <select id="entryType">
+    <option value="terror_hard">Terror (Hard)</option>
+    <option value="md_red">MD Red</option>
+  </select>
+
+  <textarea
+    id="lootInput"
+    placeholder="Cole aqui o loot..."
+  ></textarea>
+
+  <button id="saveBtn">Salvar</button>
+
+</div>
     </section>
 
-    <!-- UPDATES/LOGS -->
+    <!-- LOGS -->
     <section class="page" id="logs">
-      <h1>Updates / Logs</h1>
-      🚧 em construção... 🚧
+      <div class="logs-header" id="logsHeader">
+      <h1>Logs</h1>
+      </div>
+      <div class="logs-content" id="logsContent">
+        <div class="logs-board" id="logsBoard"></div>
+      </div>
     </section>
 
   </main>

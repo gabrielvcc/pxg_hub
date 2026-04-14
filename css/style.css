@@ -1409,3 +1409,21 @@ body {
   max-height: 92vh;
   cursor: zoom-out;
 }
+
+/* PROFIT */
+
+.insert-panel {
+  margin-top: 30px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+body.admin .insert-panel {
+  display: flex;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
