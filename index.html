@@ -117,25 +117,50 @@
     <!-- PROFIT -->
     <section class="page" id="profit">
       <h1>Dashboard de Profits</h1>
+      <div class="user-menu">
+        <img id="userAvatar" class="user-avatar" src="/assets/icons/user.png" />
+        <div class="user-dropdown hidden">
+        <button id="logoutBtn">Sair</button>
+        </div>
+      </div>
       <script type="module" src="/js/firebase.js"></script>
       <script type="module" src="/js/profit.js"></script>
-      <button id="loginBtn">Login</button>
-      <div class="insert-panel">
+      
+      <button id="openModalBtn" class="insert-btn hidden">+ Inserir Profit</button>
 
-  <h2>Inserir Profit</h2>
+      <div id="modal" class="modal hidden">
+  <div class="modal-content">
 
-  <select id="entryType">
-    <option value="terror_hard">Terror (Hard)</option>
-    <option value="md_red">MD Red</option>
-  </select>
+    <h2>Inserir Profit</h2>
 
-  <textarea
-    id="lootInput"
-    placeholder="Cole aqui o loot..."
-  ></textarea>
+    <select id="entryType">
+      <option value="" disabled selected>Selecione o tipo de conteúdo</option>
+      <option value="terror_hard">Terror (Hard)</option>
+      <option value="md_red">MD Red</option>
+      <option value="hunt">Hunt</option>
+    </select>
 
-  <button id="saveBtn">Salvar</button>
+    <h3 class="section-title gain">Ganhos</h3>
 
+<textarea id="lootInput" placeholder="Cole o loot..."></textarea>
+
+<div id="manualForm" class="hidden">
+  <div id="itemsContainer"></div>
+  <button id="addItemBtn" class="add-item-btn">+ Adicionar Item</button>
+</div>
+
+<h3 class="section-title cost">Gastos</h3>
+
+<div id="costContainer"></div>
+<button id="addCostBtn" class="add-item-btn">+ Adicionar Gasto</button>
+
+    <button id="saveBtn" class="save-btn">Salvar</button>
+
+  </div>
+</div>
+<div id="toast" class="toast hidden">
+  <span id="toastMessage">Salvo com sucesso</span>
+  <div class="toast-bar"></div>
 </div>
     </section>
 

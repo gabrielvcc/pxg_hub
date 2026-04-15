@@ -1,0 +1,26 @@
+{
+  "rough_gemstone": {
+    "name": "Rough Gemstone",
+    "image": "/assets/items/rough_gemstone.png",
+    "type": "loot",
+    "sell": 5000
+  },
+  "echo_shard": {
+    "name": "Echo Shard",
+    "image": "/assets/items/echo_shard.png",
+    "type": "loot",
+    "sell": 2000
+  },
+  "revive_nw": {
+    "name": "Nightmare Revive",
+    "image": "https://wiki.pokexgames.com/images/5/50/Nightmare_Revive.png",
+    "type": "supply",
+    "buy": 200
+  },
+  "chopped_lum_berry": {
+    "name": "Chopped Lum Berry",
+    "image": "https://wiki.pokexgames.com/images/thumb/8/87/Chopped_Lum_Berry.webp/16px-Chopped_Lum_Berry.webp.png",
+    "type": "supply",
+    "buy": 200
+  }
+}
