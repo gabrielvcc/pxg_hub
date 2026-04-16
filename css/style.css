@@ -1762,3 +1762,81 @@ body.admin .insert-btn {
   color: #22c55e;
   width: 100%;
 }
+
+.time-section {
+  margin-top: 20px;
+}
+
+.time-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.time-inputs input {
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 10px;
+  color: #22c55e;
+  outline: none;
+}
+
+.time-inputs input:focus {
+  border-color: #22c55e;
+}
+
+.profit-header {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0 20px 0; /* topo + baixo */
+}
+
+.profit-header select:hover {
+  border-color: #22c55e;
+}
+
+.profit-header select {
+  background: #111827;
+  color: #22c55e;
+  border: 1px solid #1f2937;
+  padding: 10px 16px;
+  border-radius: 10px;
+  min-width: 220px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.charts-container {
+  display: flex;
+  gap: 20px;
+  width: 1200px;
+}
+
+.chart-box h3 {
+  margin-bottom: 10px;
+  color: #22c55e;
+}
+
+.chart-box {
+  flex: 1;
+  background: linear-gradient(135deg, #15151f, #1b1b28);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: inset 0 0 0 1px #24243a;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-box canvas {
+  max-width: 400px;
+}

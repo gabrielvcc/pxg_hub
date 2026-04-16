@@ -203,6 +203,18 @@ function setupSave() {
     const totalProfit = gainData.total;
     const totalCost = costData.total;
     const netProfit = totalProfit - totalCost;
+    
+    const hours = parseInt(document.getElementById("hoursInput").value) || 0;
+    const minutes = parseInt(document.getElementById("minutesInput").value) || 0;
+
+    const totalMinutes = (hours * 60) + minutes;
+
+if (totalMinutes === 0) {
+  alert("Informe o tempo da atividade");
+  return;
+}
+
+const profitPerHour = (netProfit / totalMinutes) * 60;
 
     const missingItems = [
       ...gainData.missingItems,
@@ -223,6 +235,8 @@ function setupSave() {
         netProfit,
         missingItems,
         raw: rawText,
+        timeMinutes: totalMinutes,
+        profitPerHour: profitPerHour,
         createdAt: serverTimestamp()
       });
 
@@ -233,6 +247,8 @@ function setupSave() {
       textarea.value = "";
       document.getElementById("itemsContainer").innerHTML = "";
       document.getElementById("costContainer").innerHTML = "";
+      document.getElementById("hoursInput").value = "";
+      document.getElementById("minutesInput").value = "";
       entryType.value = "";
       textarea.classList.remove("hidden");
       document.getElementById("manualForm").classList.add("hidden");
@@ -370,3 +386,71 @@ function showToast(message = "Salvo com sucesso") {
     toast.classList.add("hidden");
   }, 5000);
 }
+
+let gainChart;
+let costChart;
+
+function renderCharts(data) {
+
+  const gainCtx = document.getElementById("gainChart");
+  const costCtx = document.getElementById("costChart");
+
+  if (gainChart) gainChart.destroy();
+  if (costChart) costChart.destroy();
+
+  gainChart = new Chart(gainCtx, {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(data.gains),
+      datasets: [{
+        data: Object.values(data.gains),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { color: "#9ca3af" }
+        }
+      }
+    }
+  });
+
+  costChart = new Chart(costCtx, {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(data.costs),
+      datasets: [{
+        data: Object.values(data.costs),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { color: "#9ca3af" }
+        }
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const fakeData = {
+    gains: {
+      Hunt: 500000,
+      Terror: 320000,
+      MD: 180000
+    },
+    costs: {
+      Hunt: 200000,
+      Terror: 150000,
+      MD: 90000
+    }
+  };
+
+  renderCharts(fakeData);
+});
