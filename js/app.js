@@ -1,3 +1,24 @@
+// TEMA
+const themeButtons = document.querySelectorAll('[data-theme-option]');
+
+function applyTheme(theme) {
+  const selectedTheme = theme === 'light' ? 'light' : 'dim';
+  document.documentElement.dataset.theme = selectedTheme;
+  localStorage.setItem('pxg-theme', selectedTheme);
+  themeButtons.forEach(button => {
+    const isActive = button.dataset.themeOption === selectedTheme;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+  window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: selectedTheme } }));
+}
+
+themeButtons.forEach(button => {
+  button.addEventListener('click', () => applyTheme(button.dataset.themeOption));
+});
+
+applyTheme(document.documentElement.dataset.theme);
+
 // NAVEGAÇÃO
 const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');

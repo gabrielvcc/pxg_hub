@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Palitou Pxg Profile</title>
+  <script>
+    document.documentElement.dataset.theme = localStorage.getItem("pxg-theme") || "dim";
+  </script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="/favicon.png" type="image/png">
     <meta property="og:title" content="PXG Palitou Profile" />
@@ -32,8 +35,16 @@
       <div class="nav-item" data-page="conquistas">Conquistas</div>
       <div class="nav-item" data-page="makers">Makers</div>
       <div class="nav-item" data-page="profit">Profits</div>
+      <div class="nav-item admin-nav-item" data-page="itemsCatalog">Catálogo</div>
       <div class="nav-item" data-page="logs">Updates/Logs</div>
     </nav>
+    <div class="theme-switcher" aria-label="Tema da interface">
+      <span>Tema</span>
+      <div class="theme-options">
+        <button type="button" data-theme-option="dim" title="Tema escuro suave">Dim</button>
+        <button type="button" data-theme-option="light" title="Tema claro">Claro</button>
+      </div>
+    </div>
     <div id="bottom-bar">
   <p>
     developed by
@@ -171,38 +182,234 @@
   <div class="toast-bar"></div>
 </div>
 <div class="profit-header">
-
-  <select id="viewMode">
-    <option value="chart">Gráfico</option>
-    <option value="list">Lista</option>
-  </select>
-
-  <select id="dateFilter">
-    <option value="month">Mês atual</option>
-    <option value="year">Ano atual</option>
-    <option value="all">Desde sempre</option>
-  </select>
-
-  <select id="contentFilter">
-    <option value="all">Todos</option>
-    <option value="hunt">Hunt</option>
-    <option value="terror">Terror</option>
-    <option value="md">MD</option>
-  </select>
-
+  <div class="filter-group">
+    <span>Modelo</span>
+    <select id="viewMode">
+      <option value="chart">Painel gráfico</option>
+      <option value="table">Planilha detalhada</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span>Filtro: Data</span>
+    <select id="dateFilter">
+      <option value="month">Mês atual</option>
+      <option value="year">Ano atual</option>
+      <option value="all">Desde sempre</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span>Filtro: Conteúdo</span>
+    <select id="contentFilter">
+      <option value="all">Todos</option>
+      <option value="hunt">Hunt</option>
+      <option value="terror">Terror</option>
+      <option value="md">MD</option>
+    </select>
+  </div>
 </div>
 
+<div class="profit-kpis">
+  <article class="profit-kpi kpi-gain">
+    <span>Ganhos brutos</span>
+    <strong id="kpiGains">0</strong>
+    <small>Total recebido no período</small>
+  </article>
+  <article class="profit-kpi kpi-cost">
+    <span>Gastos</span>
+    <strong id="kpiCosts">0</strong>
+    <small>Suprimentos e custos</small>
+  </article>
+  <article class="profit-kpi kpi-net">
+    <span>Lucro líquido</span>
+    <strong id="kpiNet">0</strong>
+    <small id="kpiMargin">Margem de 0%</small>
+  </article>
+  <article class="profit-kpi kpi-hour">
+    <span>Lucro por hora</span>
+    <strong id="kpiPerHour">0</strong>
+    <small id="kpiSessions">0 atividades registradas</small>
+  </article>
+</div>
+
+<section class="pricing-report">
+  <button id="pricingReportToggle" class="pricing-report-header" type="button">
+    <div>
+      <span class="pricing-report-eyebrow">Controle de preços</span>
+      <strong>Itens para precificar</strong>
+      <small>Valores pendentes encontrados nos registros do Firebase</small>
+    </div>
+    <span id="missingPriceCount" class="pricing-count">0</span>
+  </button>
+  <div id="pricingReportBody" class="pricing-report-body hidden">
+    <div class="pricing-report-note">
+      O preço informado será salvo no catálogo e aplicado a todos os registros afetados, preservando os demais preços históricos.
+    </div>
+    <div id="missingPricesList" class="missing-prices-list"></div>
+  </div>
+</section>
+
+<div id="chartView" class="profit-view">
 <div class="charts-container">
   <div class="chart-box">
-    <h3>Ganhos</h3>
+  <h3>Ganhos</h3>
+  <div class="chart-wrapper">
     <canvas id="gainChart"></canvas>
   </div>
+</div>
 
-  <div class="chart-box">
-    <h3>Gastos</h3>
+<div class="chart-box">
+  <h3>Gastos</h3>
+  <div class="chart-wrapper">
     <canvas id="costChart"></canvas>
   </div>
 </div>
+</div>
+
+<div class="chart-box trend-chart-box">
+  <div class="chart-title-row">
+    <div>
+      <h3>Evolução do lucro líquido</h3>
+      <p>Comparativo mensal dos registros filtrados</p>
+    </div>
+  </div>
+  <div class="trend-chart-wrapper">
+    <canvas id="trendChart"></canvas>
+  </div>
+</div>
+</div>
+
+<div id="tableView" class="profit-view hidden">
+  <div class="spreadsheet-card">
+    <div class="spreadsheet-toolbar">
+      <div>
+        <h3>Livro de atividades</h3>
+        <p>Cada linha representa um registro salvo no Firebase.</p>
+      </div>
+      <div class="spreadsheet-actions">
+        <input id="profitSearch" type="search" placeholder="Buscar conteúdo ou item...">
+        <button id="exportProfitsBtn" type="button">Exportar CSV</button>
+      </div>
+    </div>
+    <div class="spreadsheet-scroll">
+      <table class="profit-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Data</th>
+            <th>Conteúdo</th>
+            <th>Ganhos</th>
+            <th>Gastos</th>
+            <th>Lucro líquido</th>
+            <th>Tempo</th>
+            <th>Lucro/h</th>
+            <th>Loot</th>
+            <th>Suprimentos</th>
+          </tr>
+        </thead>
+        <tbody id="profitsTableBody"></tbody>
+      </table>
+    </div>
+    <div class="spreadsheet-footer">
+      <span id="tableResultCount">0 registros</span>
+      <span id="tableTotalNet">Lucro exibido: 0</span>
+    </div>
+  </div>
+</div>
+    </section>
+
+    <!-- CATÁLOGO DE ITENS -->
+    <section class="page" id="itemsCatalog">
+      <div class="catalog-page-header">
+        <div>
+          <span class="catalog-eyebrow">Administração</span>
+          <h1>Catálogo de Itens</h1>
+          <p>Cadastros, imagens e preços utilizados nos próximos profits.</p>
+        </div>
+        <button id="newCatalogItemBtn" class="catalog-primary-btn" type="button">+ Novo item</button>
+      </div>
+
+      <div class="catalog-summary">
+        <div><span>Total</span><strong id="catalogTotal">0</strong></div>
+        <div><span>Sem imagem</span><strong id="catalogNoImage">0</strong></div>
+        <div><span>Pendentes</span><strong id="catalogPending">0</strong></div>
+      </div>
+
+      <div class="catalog-toolbar">
+        <input id="catalogSearch" type="search" placeholder="Buscar item...">
+        <select id="catalogTypeFilter">
+          <option value="all">Todos os tipos</option>
+          <option value="loot">Loot</option>
+          <option value="supply">Suprimento</option>
+          <option value="both">Compra e venda</option>
+        </select>
+        <select id="catalogStatusFilter">
+          <option value="all">Todos os status</option>
+          <option value="priced">Precificados</option>
+          <option value="pending">Pendentes</option>
+          <option value="no-image">Sem imagem</option>
+        </select>
+      </div>
+
+      <div id="catalogGrid" class="catalog-grid"></div>
+
+      <div id="catalogModal" class="modal hidden">
+        <div class="modal-content catalog-modal-content">
+          <div class="catalog-modal-header">
+            <div>
+              <span class="catalog-eyebrow">Ficha do item</span>
+              <h2 id="catalogModalTitle">Novo item</h2>
+            </div>
+            <button id="closeCatalogModal" type="button" aria-label="Fechar">×</button>
+          </div>
+
+          <form id="catalogItemForm">
+            <input id="catalogItemId" type="hidden">
+            <div class="catalog-form-grid">
+              <label class="catalog-field catalog-field-wide">
+                <span>Nome</span>
+                <input id="catalogItemName" required placeholder="Ex.: Giant Fang">
+              </label>
+              <label class="catalog-field">
+                <span>Tipo</span>
+                <select id="catalogItemType" required>
+                  <option value="loot">Loot</option>
+                  <option value="supply">Suprimento</option>
+                  <option value="both">Compra e venda</option>
+                </select>
+              </label>
+              <label class="catalog-field">
+                <span>Preço de compra</span>
+                <input id="catalogItemBuy" class="money-input" type="text" inputmode="numeric" value="0" placeholder="Ex.: 50k">
+              </label>
+              <label class="catalog-field">
+                <span>Preço de venda</span>
+                <input id="catalogItemSell" class="money-input" type="text" inputmode="numeric" value="0" placeholder="Ex.: 4.5kk">
+              </label>
+              <label class="catalog-field catalog-field-wide">
+                <span>URL da imagem</span>
+                <input id="catalogItemImage" type="url" placeholder="https://...">
+              </label>
+            </div>
+
+            <div class="catalog-image-preview">
+              <div id="catalogImageFallback">Sem imagem</div>
+              <img id="catalogImagePreview" class="hidden" alt="Prévia do item">
+            </div>
+
+            <div class="catalog-form-actions">
+              <button id="saveCatalogItemBtn" class="catalog-primary-btn" type="submit">Salvar item</button>
+            </div>
+          </form>
+
+          <section id="catalogHistorySection" class="catalog-history hidden">
+            <div class="catalog-history-title">
+              <h3>Histórico de preços</h3>
+              <span id="catalogHistoryCount">0 alterações</span>
+            </div>
+            <div id="catalogHistoryList" class="catalog-history-list"></div>
+          </section>
+        </div>
+      </div>
     </section>
 
     <!-- LOGS -->
@@ -220,6 +427,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="js/app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 </body>
 </html>
