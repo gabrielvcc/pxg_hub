@@ -15,21 +15,6 @@ import {
 
 const ADMIN_EMAIL = "gabrielvarnes1@gmail.com";
 
-// Usado somente na primeira inicialização para levar o catálogo antigo ao Firebase.
-const LEGACY_ITEM_SEED = [
-  { name: "Rough Gemstone", image: "/assets/items/rough_gemstone.png", type: "loot", buy: 0, sell: 5000 },
-  { name: "Echo Shard", image: "/assets/items/echo_shard.png", type: "loot", buy: 0, sell: 4500 },
-  { name: "Nightmare Revive", image: "https://wiki.pokexgames.com/images/5/50/Nightmare_Revive.png", type: "supply", buy: 200, sell: 0 },
-  { name: "Chopped Lum Berry", image: "https://wiki.pokexgames.com/images/thumb/8/87/Chopped_Lum_Berry.webp/16px-Chopped_Lum_Berry.webp.png", type: "supply", buy: 200, sell: 0 },
-  { name: "Star dust", image: "", type: "loot", buy: 0, sell: 12000 },
-  { name: "Technological Crystal (Tier: 8)", image: "", type: "loot", buy: 0, sell: 30000 },
-  { name: "Technological Crystal (Tier: 7)", image: "", type: "loot", buy: 0, sell: 15000 },
-  { name: "Mystic Star", image: "", type: "loot", buy: 0, sell: 8000 },
-  { name: "Leaf Stone", image: "", type: "loot", buy: 0, sell: 2000 },
-  { name: "Enigma Stone", image: "", type: "loot", buy: 0, sell: 3000 },
-  { name: "solid dark gem", image: "", type: "loot", buy: 0, sell: 100 },
-  { name: "Attack T8", image: "", type: "loot", buy: 0, sell: 5000 }
-];
 
 Chart.defaults.devicePixelRatio = window.devicePixelRatio;
 
@@ -104,6 +89,7 @@ function setupAuth() {
 function setupUI() {
   const modal = document.getElementById("modal");
   const openBtn = document.getElementById("openModalBtn");
+  const closeBtn = document.getElementById("closeProfitModal");
   const entryType = document.getElementById("entryType");
   const textarea = document.getElementById("lootInput");
   const manualForm = document.getElementById("manualForm");
@@ -114,7 +100,12 @@ function setupUI() {
   const addItemBtn = document.getElementById("addItemBtn");
   const addCostBtn = document.getElementById("addCostBtn");
 
-  openBtn.onclick = () => modal.classList.remove("hidden");
+  openBtn.onclick = () => {
+    modal.classList.remove("hidden");
+    if (!costContainer.querySelector(".item-row")) createItemRow(costContainer, "supply");
+  };
+
+  closeBtn.onclick = () => modal.classList.add("hidden");
 
   modal.onclick = (e) => {
     if (e.target === modal) modal.classList.add("hidden");
@@ -124,6 +115,7 @@ function setupUI() {
     if (entryType.value === "hunt") {
       textarea.classList.add("hidden");
       manualForm.classList.remove("hidden");
+      if (!itemsContainer.querySelector(".item-row")) createItemRow(itemsContainer, "loot");
     } else {
       textarea.classList.remove("hidden");
       manualForm.classList.add("hidden");
@@ -155,12 +147,14 @@ function createItemRow(container, type) {
       <div class="item-dropdown hidden"></div>
     </div>
     <input class="item-qty" type="number" placeholder="Qtd">
+    <button class="remove-item-btn" type="button" title="Remover item" aria-label="Remover item">×</button>
   `;
 
   container.appendChild(row);
 
   const input = row.querySelector(".item-search");
   const dropdown = row.querySelector(".item-dropdown");
+  row.querySelector(".remove-item-btn").onclick = () => row.remove();
 
   input.onfocus = () => {
     dropdown.classList.remove("hidden");
@@ -481,7 +475,7 @@ function createChart(ctx, labels, values) {
       layout: {
         padding: {
           top: 50,
-          bottom: 80, // 🔥 espaço real pro datalabel respirar
+          bottom: 80,
           left: 20,
           right: 20
         }
@@ -1473,7 +1467,11 @@ function formatContentType(type = "") {
   const labels = {
     hunt: "Hunt",
     terror_hard: "Terror (Hard)",
-    md_red: "MD Red"
+    md_red: "MD Red",
+    md_blue: "MD Blue",
+    dg_shiny_tentacruel: "DG Shiny Tentacruel",
+    legendary_dogs: "Cães Lendários",
+    finder_rank_a: "Finder Rank A"
   };
 
   return labels[type] || type;

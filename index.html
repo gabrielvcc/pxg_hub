@@ -140,42 +140,74 @@
       <button id="openModalBtn" class="insert-btn hidden">+ Inserir Profit</button>
 
       <div id="modal" class="modal hidden">
-  <div class="modal-content">
+        <div class="modal-content profit-modal-content">
+          <div class="profit-modal-header">
+            <div>
+              <span class="profit-modal-eyebrow">Novo registro</span>
+              <h2>Inserir Profit</h2>
+              <p>Registre os ganhos, gastos e duração da atividade.</p>
+            </div>
+            <button id="closeProfitModal" class="profit-modal-close" type="button" aria-label="Fechar">×</button>
+          </div>
 
-    <h2>Inserir Profit</h2>
+          <label class="profit-type-field">
+            <span>Tipo de conteúdo</span>
+            <select id="entryType">
+              <option value="" disabled selected>Selecione o tipo de conteúdo</option>
+              <option value="hunt">Hunt</option>
+              <option value="terror_hard">Terror (Hard)</option>
+              <option value="md_red">MD Red</option>
+              <option value="md_blue">MD Blue</option>
+              <option value="dg_shiny_tentacruel">DG Shiny Tentacruel</option>
+              <option value="legendary_dogs">Cães Lendários</option>
+              <option value="finder_rank_a">Finder Rank A</option>
+            </select>
+          </label>
 
-    <select id="entryType">
-      <option value="" disabled selected>Selecione o tipo de conteúdo</option>
-      <option value="terror_hard">Terror (Hard)</option>
-      <option value="md_red">MD Red</option>
-      <option value="hunt">Hunt</option>
-    </select>
+          <div class="profit-entry-layout">
+            <section class="profit-entry-panel gain-panel">
+              <div class="profit-entry-panel-title">
+                <span class="panel-icon">＋</span>
+                <div><h3>Ganhos</h3><small>Loot recebido na atividade</small></div>
+              </div>
 
-    <h3 class="section-title gain">Ganhos</h3>
+              <textarea id="lootInput" placeholder="Cole aqui o texto do loot recebido..."></textarea>
 
-<textarea id="lootInput" placeholder="Cole o loot..."></textarea>
+              <div id="manualForm" class="hidden">
+                <div id="itemsContainer" class="profit-items-list"></div>
+                <button id="addItemBtn" class="add-item-btn" type="button">+ Adicionar Item</button>
+              </div>
+            </section>
 
-<div id="manualForm" class="hidden">
-  <div id="itemsContainer"></div>
-  <button id="addItemBtn" class="add-item-btn">+ Adicionar Item</button>
-</div>
+            <aside class="profit-entry-side">
+              <section class="profit-entry-panel cost-panel">
+                <div class="profit-entry-panel-title">
+                  <span class="panel-icon">−</span>
+                  <div><h3>Gastos</h3><small>Suprimentos utilizados</small></div>
+                </div>
+                <div id="costContainer" class="profit-items-list"></div>
+                <button id="addCostBtn" class="add-item-btn cost-add-btn" type="button">+ Adicionar Gasto</button>
+              </section>
 
-<h3 class="section-title cost">Gastos</h3>
+              <section class="time-section profit-time-card">
+                <div class="profit-entry-panel-title">
+                  <span class="panel-icon time-icon">◷</span>
+                  <div><h3>Tempo da atividade</h3><small>Usado no cálculo de lucro/hora</small></div>
+                </div>
+                <div class="time-inputs">
+                  <label><span>Horas</span><input type="number" id="hoursInput" placeholder="0" min="0"></label>
+                  <label><span>Minutos</span><input type="number" id="minutesInput" placeholder="0" min="0" max="59"></label>
+                </div>
+              </section>
+            </aside>
+          </div>
 
-<div id="costContainer"></div>
-<button id="addCostBtn" class="add-item-btn">+ Adicionar Gasto</button>
-<div class="time-section">
-  <label>Tempo da atividade</label>
-
-  <div class="time-inputs">
-    <input type="number" id="hoursInput" placeholder="Horas" min="0">
-    <input type="number" id="minutesInput" placeholder="Minutos" min="0" max="59">
-  </div>
-</div>
-    <button id="saveBtn" class="save-btn">Salvar</button>
-
-  </div>
-</div>
+          <div class="profit-modal-footer">
+            <span>Os preços usados ficarão salvos no histórico.</span>
+            <button id="saveBtn" class="save-btn" type="button">Salvar Profit</button>
+          </div>
+        </div>
+      </div>
 
 <div id="toast" class="toast hidden">
   <span id="toastMessage">Salvo com sucesso</span>
@@ -202,8 +234,12 @@
     <select id="contentFilter">
       <option value="all">Todos</option>
       <option value="hunt">Hunt</option>
-      <option value="terror">Terror</option>
-      <option value="md">MD</option>
+      <option value="terror_hard">Terror (Hard)</option>
+      <option value="md_red">MD Red</option>
+      <option value="md_blue">MD Blue</option>
+      <option value="dg_shiny_tentacruel">DG Shiny Tentacruel</option>
+      <option value="legendary_dogs">Cães Lendários</option>
+      <option value="finder_rank_a">Finder Rank A</option>
     </select>
   </div>
 </div>

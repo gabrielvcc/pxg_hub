@@ -2571,3 +2571,177 @@ body::before {
     drop-shadow(0 0 7px var(--card-glow, var(--accent-glow-soft)))
     drop-shadow(0 5px 8px rgba(50, 70, 85, 0.14));
 }
+
+/* MODAL DE INSERÇÃO DE PROFIT */
+.profit-modal-content {
+  width: min(980px, calc(100vw - 40px));
+  max-width: none;
+  max-height: min(90vh, 820px);
+  padding: 0;
+  gap: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 20px;
+  scrollbar-color: var(--theme-border) transparent;
+  scrollbar-width: thin;
+}
+
+.profit-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 26px 18px;
+  border-bottom: 1px solid var(--theme-border);
+  background: color-mix(in srgb, var(--theme-elevated) 92%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.profit-modal-header h2 { margin: 3px 0 4px; color: var(--theme-text); font-size: 24px; }
+.profit-modal-header p { margin: 0; color: var(--theme-muted); font-size: 12px; }
+.profit-modal-eyebrow { color: var(--accent-main); font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.profit-modal-close {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--theme-border);
+  border-radius: 9px;
+  background: var(--theme-input);
+  color: var(--theme-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.profit-modal-close:hover { border-color: #ef4444; color: #ef4444; }
+
+.profit-type-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 26px 0;
+}
+.profit-type-field > span { color: var(--theme-muted); font-size: 11px; font-weight: 700; }
+.profit-type-field select { width: 100%; min-height: 43px; }
+
+.profit-entry-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+  gap: 16px;
+  padding: 18px 26px 22px;
+  align-items: start;
+}
+
+.profit-entry-side { display: grid; gap: 14px; min-width: 0; }
+.profit-entry-panel,
+.profit-time-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--theme-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--theme-card) 88%, var(--theme-bg));
+}
+.gain-panel { border-top: 2px solid rgba(34, 197, 94, 0.7); }
+.cost-panel { border-top: 2px solid rgba(239, 68, 68, 0.7); }
+
+.profit-entry-panel-title { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.profit-entry-panel-title h3 { margin: 0 0 2px; color: var(--theme-text); font-size: 14px; }
+.profit-entry-panel-title small { color: var(--theme-muted); font-size: 10px; }
+.panel-icon {
+  display: grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  font-size: 18px;
+  font-weight: 800;
+}
+.cost-panel .panel-icon { background: rgba(239, 68, 68, 0.12); color: #f87171; }
+.time-icon { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
+
+.profit-entry-panel textarea {
+  width: 100%;
+  min-height: 210px;
+  max-height: 380px;
+  line-height: 1.5;
+}
+
+.profit-items-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 11px; }
+.profit-items-list:empty { margin-bottom: 0; }
+.profit-modal-content .item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--theme-border);
+  border-radius: 11px;
+  background: var(--theme-input);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.profit-modal-content .item-row:focus-within { border-color: rgba(34, 197, 94, 0.65); box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.09); }
+.profit-modal-content .item-input { padding: 2px 4px; border: 0; background: transparent; }
+.profit-modal-content .item-qty { flex: 0 0 76px; width: 76px; min-width: 0; text-align: center; }
+.remove-item-btn {
+  display: grid;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  font-size: 17px;
+  cursor: pointer;
+}
+.remove-item-btn:hover { background: rgba(239, 68, 68, 0.18); }
+
+.profit-modal-content .add-item-btn { width: 100%; padding: 9px 12px; }
+.cost-add-btn { border-color: rgba(239, 68, 68, 0.55); color: #f87171; }
+.cost-add-btn:hover { background: rgba(239, 68, 68, 0.08); }
+.profit-modal-content .item-dropdown { top: calc(100% + 9px); z-index: 30; box-shadow: 0 14px 35px var(--theme-shadow); }
+
+.profit-time-card { margin-top: 0; border-top: 2px solid rgba(56, 189, 248, 0.65); }
+.profit-time-card > label { display: none; }
+.profit-time-card .time-inputs label { display: flex; flex: 1; flex-direction: column; gap: 5px; margin: 0; }
+.profit-time-card .time-inputs label span { color: var(--theme-muted); font-size: 10px; }
+.profit-time-card .time-inputs input { min-width: 0; color: var(--theme-text); }
+
+.profit-modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 19;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 26px;
+  border-top: 1px solid var(--theme-border);
+  background: color-mix(in srgb, var(--theme-elevated) 94%, transparent);
+  backdrop-filter: blur(16px);
+}
+.profit-modal-footer > span { color: var(--theme-muted); font-size: 10px; }
+.profit-modal-footer .save-btn { min-width: 170px; margin: 0; padding: 11px 20px; }
+
+@media (max-width: 800px) {
+  .profit-modal-content { width: min(94vw, 620px); max-height: 92vh; }
+  .profit-entry-layout { grid-template-columns: 1fr; padding: 15px; }
+  .profit-type-field { padding: 15px 15px 0; }
+  .profit-modal-header { padding: 18px 15px 14px; }
+  .profit-modal-footer { padding: 12px 15px; }
+}
+
+@media (max-width: 480px) {
+  .profit-modal-footer { align-items: stretch; flex-direction: column; gap: 8px; }
+  .profit-modal-footer .save-btn { width: 100%; }
+  .profit-modal-content .item-row { flex-wrap: wrap; }
+  .profit-modal-content .item-select { flex: 1 1 calc(100% - 40px); }
+  .profit-modal-content .item-qty { flex: 1; width: auto; }
+}
