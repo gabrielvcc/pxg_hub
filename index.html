@@ -415,11 +415,11 @@
               </label>
               <label class="catalog-field">
                 <span>Preço de compra</span>
-                <input id="catalogItemBuy" class="money-input" type="text" inputmode="numeric" value="0" placeholder="Ex.: 50k">
+                <input id="catalogItemBuy" class="money-input" type="text" inputmode="decimal" value="0" placeholder="Ex.: 1,5 ou 50k">
               </label>
               <label class="catalog-field">
                 <span>Preço de venda</span>
-                <input id="catalogItemSell" class="money-input" type="text" inputmode="numeric" value="0" placeholder="Ex.: 4.5kk">
+                <input id="catalogItemSell" class="money-input" type="text" inputmode="decimal" value="0" placeholder="Ex.: 1,5 ou 4.5kk">
               </label>
               <label class="catalog-field catalog-field-wide">
                 <span>URL da imagem</span>
@@ -433,6 +433,7 @@
             </div>
 
             <div class="catalog-form-actions">
+              <button id="deleteCatalogItemBtn" class="catalog-danger-btn hidden" type="button">Excluir item</button>
               <button id="saveCatalogItemBtn" class="catalog-primary-btn" type="submit">Salvar item</button>
             </div>
           </form>

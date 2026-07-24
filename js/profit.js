@@ -10,7 +10,8 @@ import {
   doc,
   setDoc,
   writeBatch,
-  getDocs
+  getDocs,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const ADMIN_EMAIL = "gabrielvarnes1@gmail.com";
@@ -758,7 +759,7 @@ function renderPricingReport() {
       <span class="price-kind">${item.priceField === "sell" ? "Preço de venda" : "Preço de compra"}</span>
       <span class="missing-price-meta">${item.records.size} ${item.records.size === 1 ? "registro afetado" : "registros afetados"}</span>
       <div class="missing-price-action">
-        <input class="money-input" type="text" inputmode="numeric" placeholder="Ex.: 50k">
+        <input class="money-input" type="text" inputmode="decimal" placeholder="Ex.: 1,5 ou 50k">
         <button type="button" data-price-item="${encodeURIComponent(item.name)}" data-price-field="${item.priceField}">Atualizar</button>
       </div>
     </div>
@@ -930,6 +931,7 @@ function setupCatalogUI() {
     if (card) openCatalogItem(decodeURIComponent(card.dataset.catalogId));
   });
   document.getElementById("catalogItemForm")?.addEventListener("submit", saveCatalogItem);
+  document.getElementById("deleteCatalogItemBtn")?.addEventListener("click", deleteCatalogItem);
 }
 
 function renderCatalog() {
@@ -994,6 +996,7 @@ function openCatalogItem(itemId = null) {
   document.getElementById("catalogItemImage").value = item?.image || "";
   document.getElementById("catalogModalTitle").textContent = item ? item.name : "Novo item";
   document.getElementById("catalogHistorySection").classList.toggle("hidden", !item);
+  document.getElementById("deleteCatalogItemBtn").classList.toggle("hidden", !item);
   updateCatalogImagePreview(item?.image || "");
   document.getElementById("catalogModal").classList.remove("hidden");
 
@@ -1002,6 +1005,39 @@ function openCatalogItem(itemId = null) {
 
 function closeCatalogModal() {
   document.getElementById("catalogModal")?.classList.add("hidden");
+}
+
+async function deleteCatalogItem() {
+  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+
+  const itemId = document.getElementById("catalogItemId").value;
+  const item = getAvailableItems().find(entry => entry.id === itemId);
+  if (!item) return;
+
+  const affectedProfits = profits.filter(profit => {
+    return findItemKey(profit.loot, item.name) || findItemKey(profit.costs, item.name);
+  }).length;
+  const historicalWarning = affectedProfits
+    ? `\n\n${affectedProfits} profit(s) antigo(s) usam esse nome. Eles serão preservados como histórico.`
+    : "";
+
+  if (!window.confirm(`Excluir "${item.name}" do catálogo?${historicalWarning}`)) return;
+
+  const button = document.getElementById("deleteCatalogItemBtn");
+  button.disabled = true;
+  button.textContent = "Excluindo...";
+
+  try {
+    await deleteDoc(doc(db, "items", item.id));
+    closeCatalogModal();
+    showToast("Item excluído do catálogo");
+  } catch (error) {
+    console.error("Erro ao excluir item:", error);
+    showToast("Erro ao excluir o item");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Excluir item";
+  }
 }
 
 function updateCatalogImagePreview(url) {
@@ -1352,6 +1388,14 @@ function setupMoneyInput(input) {
 
     if (/^\d$/.test(event.key)) {
       event.preventDefault();
+      if (input.dataset.decimalMode === "true") {
+        const decimalDigits = input.dataset.decimalDigits || "";
+        if (decimalDigits.length < 2) {
+          renderDecimalMoneyInput(input, input.dataset.integerPart || "0", decimalDigits + event.key);
+        }
+        return;
+      }
+
       const current = String(Math.trunc(getMoneyInputValue(input)));
       const replaceAll = input.selectionStart === 0 && input.selectionEnd === input.value.length;
       const digits = replaceAll || current === "0" ? event.key : current + event.key;
@@ -1359,8 +1403,25 @@ function setupMoneyInput(input) {
       return;
     }
 
+    if (event.key === "," || event.key === ".") {
+      event.preventDefault();
+      const integerPart = String(Math.trunc(getMoneyInputValue(input)));
+      renderDecimalMoneyInput(input, integerPart, "");
+      return;
+    }
+
     if (event.key === "Backspace") {
       event.preventDefault();
+      if (input.dataset.decimalMode === "true") {
+        const decimalDigits = input.dataset.decimalDigits || "";
+        if (decimalDigits) {
+          renderDecimalMoneyInput(input, input.dataset.integerPart || "0", decimalDigits.slice(0, -1));
+        } else {
+          initializeMoneyInput(input, Number(input.dataset.integerPart || 0));
+        }
+        return;
+      }
+
       const current = String(Math.trunc(getMoneyInputValue(input)));
       initializeMoneyInput(input, Number(current.slice(0, -1) || 0));
       return;
@@ -1384,11 +1445,31 @@ function setupMoneyInput(input) {
   input.addEventListener("input", event => {
     if (input.dataset.moneyUpdating === "true") return;
 
-    if (event.inputType?.startsWith("insert") && /^\d$/.test(event.data || "")) {
+    if (event.inputType?.startsWith("insert") && (event.data === "," || event.data === ".")) {
+      renderDecimalMoneyInput(input, String(Math.trunc(Number(input.dataset.rawValue || 0))), "");
+    } else if (event.inputType?.startsWith("insert") && /^\d$/.test(event.data || "")) {
+      if (input.dataset.decimalMode === "true") {
+        const decimalDigits = input.dataset.decimalDigits || "";
+        if (decimalDigits.length < 2) {
+          renderDecimalMoneyInput(input, input.dataset.integerPart || "0", decimalDigits + event.data);
+        }
+        return;
+      }
+
       const current = String(Math.trunc(Number(input.dataset.rawValue || 0)));
       const digits = current === "0" ? event.data : current + event.data;
       initializeMoneyInput(input, Number(digits));
     } else if (event.inputType?.startsWith("delete")) {
+      if (input.dataset.decimalMode === "true") {
+        const decimalDigits = input.dataset.decimalDigits || "";
+        if (decimalDigits) {
+          renderDecimalMoneyInput(input, input.dataset.integerPart || "0", decimalDigits.slice(0, -1));
+        } else {
+          initializeMoneyInput(input, Number(input.dataset.integerPart || 0));
+        }
+        return;
+      }
+
       const current = String(Math.trunc(Number(input.dataset.rawValue || 0)));
       initializeMoneyInput(input, Number(current.slice(0, -1) || 0));
     } else {
@@ -1402,10 +1483,28 @@ function setupMoneyInput(input) {
 function initializeMoneyInput(input, value = 0) {
   if (!input) return;
   setupMoneyInput(input);
-  const numericValue = Math.max(0, Math.round(Number(value) || 0));
+  const numericValue = Math.max(0, Math.round((Number(value) || 0) * 100) / 100);
   input.dataset.moneyUpdating = "true";
   input.dataset.rawValue = String(numericValue);
+  delete input.dataset.decimalMode;
+  delete input.dataset.decimalDigits;
+  delete input.dataset.integerPart;
   input.value = formatMoney(numericValue);
+  input.setAttribute("title", `Valor real: ${numericValue}`);
+  input.dataset.moneyUpdating = "false";
+}
+
+function renderDecimalMoneyInput(input, integerPart, decimalDigits) {
+  const safeInteger = String(Math.max(0, Number(integerPart) || 0));
+  const safeDecimals = String(decimalDigits || "").replace(/\D/g, "").slice(0, 2);
+  const numericValue = Number(`${safeInteger}.${safeDecimals || "0"}`);
+
+  input.dataset.moneyUpdating = "true";
+  input.dataset.decimalMode = "true";
+  input.dataset.integerPart = safeInteger;
+  input.dataset.decimalDigits = safeDecimals;
+  input.dataset.rawValue = String(numericValue);
+  input.value = `${safeInteger},${safeDecimals}`;
   input.setAttribute("title", `Valor real: ${numericValue}`);
   input.dataset.moneyUpdating = "false";
 }
@@ -1421,11 +1520,12 @@ function parseGameMoney(value) {
 
   if (suffixMatch) {
     const amount = Number(suffixMatch[1].replace(",", "."));
-    return Number.isFinite(amount) ? Math.round(amount * (1000 ** suffixMatch[2].length)) : 0;
+    const expanded = amount * (1000 ** suffixMatch[2].length);
+    return Number.isFinite(expanded) ? Math.round(expanded * 100) / 100 : 0;
   }
 
-  const digits = normalized.replace(/\D/g, "");
-  return Number(digits || 0);
+  const decimalValue = Number(normalized.replace(",", "."));
+  return Number.isFinite(decimalValue) ? Math.round(decimalValue * 100) / 100 : 0;
 }
 
 function formatMoney(value = 0) {
@@ -1439,7 +1539,12 @@ function formatMoney(value = 0) {
     suffixLevel += 1;
   }
 
-  if (!suffixLevel) return `${sign}${Math.round(compactValue)}`;
+  if (!suffixLevel) {
+    return `${sign}${new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(compactValue)}`;
+  }
 
   const decimals = compactValue >= 100 ? 0 : compactValue >= 10 ? 1 : 2;
   const formatted = compactValue.toFixed(decimals).replace(/\.0+$|(?<=\.[0-9])0$/g, "");

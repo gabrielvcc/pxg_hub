@@ -2314,7 +2314,18 @@ body.admin .admin-nav-item { display: block; }
 .catalog-image-preview { display: grid; height: 115px; margin-top: 15px; place-items: center; border: 1px dashed #343447; border-radius: 11px; background: #0d0d14; }
 .catalog-image-preview img { max-width: 96px; max-height: 96px; object-fit: contain; }
 .catalog-image-preview div { color: #626979; font-size: 12px; }
-.catalog-form-actions { display: flex; justify-content: flex-end; margin-top: 15px; }
+.catalog-form-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+.catalog-danger-btn {
+  padding: 10px 14px;
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  border-radius: 9px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  font-weight: 800;
+  cursor: pointer;
+}
+.catalog-danger-btn:hover { background: rgba(239, 68, 68, 0.16); }
+.catalog-danger-btn:disabled { opacity: 0.55; cursor: wait; }
 .catalog-history { margin-top: 22px; padding-top: 18px; border-top: 1px solid #29293a; }
 .catalog-history-title h3 { margin: 0; color: #e5e7eb; }
 .catalog-history-title span { color: #777e8d; font-size: 11px; }
