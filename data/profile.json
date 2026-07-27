@@ -3,19 +3,19 @@
   "title": "The Chosen One",
   "avatar": "/assets/ingame_var/me.png",
 
-  "ingame_profile_preview": "/assets/ingame_var/profile_preview_25-02-2026.png",
-  "ingame_profile_full": "/assets/ingame_var/profile_full_25-02-2026.png",
+  "ingame_profile_preview": "/assets/ingame_var/profile_preview.png",
+  "ingame_profile_full": "/assets/ingame_var/profile_full.png",
 
 "stats": {
   "level": {
     "label": "Level",
-    "value": 602,
+    "value": 604,
     "icon": "/assets/var/level-up4.png",
     "gradient": "grass"
   },
   "nightmare": {
     "label": "Nightmare Level",
-    "value": 95,
+    "value": 100,
     "icon": "/assets/pokemon/578_Darkrai.png",
     "gradient": "purple"
   },
@@ -27,25 +27,25 @@
   },
   "captures": {
     "label": "Capturas",
-    "value": 323,
+    "value": 390,
     "icon": "/assets/var/pokeball-icon2.png",
     "gradient": "red"
   },
   "achievements": {
     "label": "Conquistas",
-    "value": 384,
+    "value": 488,
     "icon": "/assets/var/achievements.png",
     "gradient": "gold"
   },
   "pokelog": {
     "label": "Pokélog",
-    "value": 2446,
+    "value": 3368,
     "icon": "/assets/var/pokelog.png",
     "gradient": "red"
   },
   "fishing": {
     "label": "Fishing",
-    "value": 90,
+    "value": 91,
     "icon": "/assets/var/magikarp-fake.png",
     "gradient": "blue"
   }

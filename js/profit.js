@@ -496,6 +496,15 @@ function createChart(ctx, labels, values) {
           color: "#fff",
 
           formatter: (value, ctx) => {
+            const total = ctx.dataset.data.reduce((sum, currentValue) => {
+              return sum + Math.abs(Number(currentValue || 0));
+            }, 0);
+            const percentage = total ? Math.abs(Number(value || 0)) / total : 0;
+
+            // Fatias pequenas continuam identificadas na legenda e no tooltip,
+            // mas não recebem rótulo externo para evitar sobreposição.
+            if (percentage < 0.06) return null;
+
             const label = ctx.chart.data.labels[ctx.dataIndex];
             return label + "\n" + formatNumber(value);
           },
@@ -1576,7 +1585,8 @@ function formatContentType(type = "") {
     md_blue: "MD Blue",
     dg_shiny_tentacruel: "DG Shiny Tentacruel",
     legendary_dogs: "Cães Lendários",
-    finder_rank_a: "Finder Rank A"
+    finder_rank_a: "Finder Rank A",
+    subject_14: "Subject #14"
   };
 
   return labels[type] || type;
