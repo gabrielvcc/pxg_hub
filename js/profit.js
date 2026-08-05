@@ -475,10 +475,10 @@ function createChart(ctx, labels, values) {
 
       layout: {
         padding: {
-          top: 50,
-          bottom: 80,
-          left: 20,
-          right: 20
+          top: 36,
+          bottom: 54,
+          left: 16,
+          right: 16
         }
       },
 
@@ -488,7 +488,13 @@ function createChart(ctx, labels, values) {
           align: "center",
           labels: {
             color: theme.text,
-            padding: 20 // 🔥 espaço ENTRE itens (mantido controlado)
+            padding: 12,
+            boxWidth: 10,
+            boxHeight: 10,
+            font: {
+              size: 10,
+              weight: "600"
+            }
           }
         },
 
@@ -512,13 +518,13 @@ function createChart(ctx, labels, values) {
           anchor: "end",
           align: "end",
 
-          offset: 12,
+          offset: 8,
 
           clamp: true,
           clip: false,
 
           font: {
-            size: 11,
+            size: 10,
             weight: "bold"
           }
         }
@@ -559,16 +565,13 @@ function renderCharts(data) {
 function setupDashboard() {
   const dateFilter = document.getElementById("dateFilter");
   const contentFilter = document.getElementById("contentFilter");
-  const viewMode = document.getElementById("viewMode");
   const profitSearch = document.getElementById("profitSearch");
 
   dateFilter?.addEventListener("change", renderDashboard);
   contentFilter?.addEventListener("change", renderDashboard);
-  viewMode?.addEventListener("change", updateViewMode);
   profitSearch?.addEventListener("input", renderTable);
   document.getElementById("exportProfitsBtn")?.addEventListener("click", exportProfitsCsv);
-
-  updateViewMode();
+  setupProfitItemTooltip();
 
   unsubscribeProfits?.();
   unsubscribeProfits = onSnapshot(
@@ -1264,20 +1267,6 @@ function renderDashboard() {
   renderTable();
 }
 
-function updateViewMode() {
-  const isTable = document.getElementById("viewMode")?.value === "table";
-  document.getElementById("chartView")?.classList.toggle("hidden", isTable);
-  document.getElementById("tableView")?.classList.toggle("hidden", !isTable);
-
-  if (!isTable) {
-    requestAnimationFrame(() => {
-      gainChart?.resize();
-      costChart?.resize();
-      trendChart?.resize();
-    });
-  }
-}
-
 function renderKpis(data) {
   const summary = data.reduce((result, profit) => {
     result.gains += Number(profit.totalProfit || 0);
@@ -1377,8 +1366,6 @@ function renderTable() {
     tbody.innerHTML = rows.map((profit, index) => {
       const date = getProfitDate(profit);
       const net = Number(profit.netProfit || 0);
-      const items = formatItems(profit.loot);
-      const costs = formatItems(profit.costs);
 
       return `<tr>
         <td class="cell-number">${index + 1}</td>
@@ -1389,8 +1376,8 @@ function renderTable() {
         <td class="money-net ${net < 0 ? "negative" : ""}">${formatMoney(net)}</td>
         <td>${formatDuration(profit.timeMinutes)}</td>
         <td class="money-net ${Number(profit.profitPerHour || 0) < 0 ? "negative" : ""}">${formatMoney(profit.profitPerHour)}</td>
-        <td class="items-cell" title="${escapeHtml(items)}">${escapeHtml(items)}</td>
-        <td class="items-cell" title="${escapeHtml(costs)}">${escapeHtml(costs)}</td>
+        <td class="items-cell loot-items-cell">${renderItemsSummary(profit.loot, "loot")}</td>
+        <td class="items-cell supply-items-cell">${renderItemsSummary(profit.costs, "supply")}</td>
       </tr>`;
     }).join("");
   }
@@ -1398,6 +1385,130 @@ function renderTable() {
   const visibleNet = rows.reduce((total, profit) => total + Number(profit.netProfit || 0), 0);
   document.getElementById("tableResultCount").textContent = `${rows.length} ${rows.length === 1 ? "registro" : "registros"}`;
   document.getElementById("tableTotalNet").textContent = `Lucro exibido: ${formatMoney(visibleNet)}`;
+}
+
+function renderItemsSummary(items = {}, kind = "loot") {
+  const entries = Object.entries(items);
+  if (!entries.length) return '<span class="items-empty">—</span>';
+
+  const visibleEntries = entries.slice(0, 2);
+  const remaining = entries.length - visibleEntries.length;
+  const encodedItems = encodeURIComponent(JSON.stringify(items));
+  const chips = visibleEntries.map(([name, quantity]) => {
+    return `<span class="item-mini-chip"><b>${formatItemQuantity(quantity)}×</b>${escapeHtml(name)}</span>`;
+  }).join("");
+
+  return `<div class="items-summary ${kind}" data-profit-items="${encodedItems}" data-items-kind="${kind}" tabindex="0">
+    ${chips}${remaining > 0 ? `<span class="item-more-chip">+${remaining}</span>` : ""}
+  </div>`;
+}
+
+function setupProfitItemTooltip() {
+  const tbody = document.getElementById("profitsTableBody");
+  if (!tbody || document.getElementById("profitItemTooltip")) return;
+
+  const tooltip = document.createElement("div");
+  tooltip.id = "profitItemTooltip";
+  tooltip.className = "profit-item-tooltip hidden";
+  document.body.appendChild(tooltip);
+  let tooltipHideTimer = null;
+  let tooltipLocked = false;
+
+  const cancelTooltipHide = () => {
+    if (tooltipHideTimer) clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = null;
+  };
+
+  const scheduleTooltipHide = () => {
+    if (tooltipLocked) return;
+    cancelTooltipHide();
+    tooltipHideTimer = setTimeout(() => tooltip.classList.add("hidden"), 220);
+  };
+
+  const showTooltip = (target, force = false) => {
+    if (tooltipLocked && !force) return;
+    cancelTooltipHide();
+    const items = JSON.parse(decodeURIComponent(target.dataset.profitItems));
+    const kind = target.dataset.itemsKind;
+    const entries = Object.entries(items);
+    tooltip.innerHTML = `
+      <div class="profit-item-tooltip-header">
+        <span>${kind === "loot" ? "Loot recebido" : "Suprimentos utilizados"}</span>
+        <b>${entries.length} ${entries.length === 1 ? "item" : "itens"}</b>
+        <small>${tooltipLocked ? "Fixado · clique fora para fechar" : "Clique para fixar"}</small>
+      </div>
+      <div class="profit-item-tooltip-list">
+        ${entries.map(([name, quantity]) => {
+          const catalogItem = catalogPrices[name.toLowerCase()];
+          return `<div class="profit-tooltip-item">
+            <span class="profit-tooltip-image">${catalogItem?.image ? `<img src="${escapeHtml(catalogItem.image)}" alt="">` : "◇"}</span>
+            <span>${escapeHtml(name)}</span>
+            <b>${formatItemQuantity(quantity)}×</b>
+          </div>`;
+        }).join("")}
+      </div>`;
+    tooltip.classList.remove("hidden");
+  };
+
+  const positionTooltip = (event, force = false) => {
+    if (tooltipLocked && !force) return;
+    const spacing = 14;
+    const width = tooltip.offsetWidth;
+    const height = tooltip.offsetHeight;
+    const left = Math.min(event.clientX + spacing, window.innerWidth - width - spacing);
+    const top = event.clientY + spacing + height > window.innerHeight
+      ? event.clientY - height - spacing
+      : event.clientY + spacing;
+    tooltip.style.left = `${Math.max(spacing, left)}px`;
+    tooltip.style.top = `${Math.max(spacing, top)}px`;
+  };
+
+  tbody.addEventListener("mouseover", event => {
+    const target = event.target.closest("[data-profit-items]");
+    if (target?.contains(event.relatedTarget)) return;
+    if (target) {
+      showTooltip(target);
+      positionTooltip(event);
+    }
+  });
+  tbody.addEventListener("mouseout", event => {
+    const target = event.target.closest("[data-profit-items]");
+    if (target && !target.contains(event.relatedTarget)) scheduleTooltipHide();
+  });
+  tbody.addEventListener("focusin", event => {
+    const target = event.target.closest("[data-profit-items]");
+    if (!target) return;
+    showTooltip(target);
+    const rect = target.getBoundingClientRect();
+    positionTooltip({ clientX: rect.left, clientY: rect.bottom });
+  });
+  tbody.addEventListener("focusout", scheduleTooltipHide);
+  tooltip.addEventListener("mouseenter", cancelTooltipHide);
+  tooltip.addEventListener("mouseleave", scheduleTooltipHide);
+
+  tbody.addEventListener("click", event => {
+    const target = event.target.closest("[data-profit-items]");
+    if (!target) return;
+
+    tooltipLocked = true;
+    cancelTooltipHide();
+    tooltip.classList.add("locked");
+    showTooltip(target, true);
+    positionTooltip({ clientX: event.clientX, clientY: event.clientY }, true);
+  });
+
+  document.addEventListener("click", event => {
+    if (!tooltipLocked) return;
+    if (tooltip.contains(event.target) || event.target.closest("[data-profit-items]")) return;
+
+    tooltipLocked = false;
+    tooltip.classList.remove("locked");
+    tooltip.classList.add("hidden");
+  });
+}
+
+function formatItemQuantity(quantity) {
+  return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(Number(quantity || 0));
 }
 
 function exportProfitsCsv() {

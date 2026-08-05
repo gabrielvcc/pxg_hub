@@ -216,13 +216,6 @@
 </div>
 <div class="profit-header">
   <div class="filter-group">
-    <span>Modelo</span>
-    <select id="viewMode">
-      <option value="chart">Painel gráfico</option>
-      <option value="table">Planilha detalhada</option>
-    </select>
-  </div>
-  <div class="filter-group">
     <span>Filtro: Data</span>
     <select id="dateFilter">
       <option value="month">Mês atual</option>
@@ -286,42 +279,29 @@
   </div>
 </section>
 
-<div id="chartView" class="profit-view">
-<div class="charts-container">
-  <div class="chart-box">
-  <h3>Ganhos</h3>
-  <div class="chart-wrapper">
-    <canvas id="gainChart"></canvas>
+<div id="chartView" class="profit-view dashboard-section">
+  <div class="dashboard-section-heading">
+    <div><span>Distribuição</span><h2>Ganhos e gastos por atividade</h2></div>
+    <small>Visão rápida do período selecionado</small>
   </div>
-</div>
-
-<div class="chart-box">
-  <h3>Gastos</h3>
-  <div class="chart-wrapper">
-    <canvas id="costChart"></canvas>
-  </div>
-</div>
-</div>
-
-<div class="chart-box trend-chart-box">
-  <div class="chart-title-row">
-    <div>
-      <h3>Evolução do lucro líquido</h3>
-      <p>Comparativo mensal dos registros filtrados</p>
+  <div class="charts-container compact-charts">
+    <div class="chart-box">
+      <h3>Ganhos</h3>
+      <div class="chart-wrapper"><canvas id="gainChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Gastos</h3>
+      <div class="chart-wrapper"><canvas id="costChart"></canvas></div>
     </div>
   </div>
-  <div class="trend-chart-wrapper">
-    <canvas id="trendChart"></canvas>
-  </div>
-</div>
 </div>
 
-<div id="tableView" class="profit-view hidden">
+<div id="tableView" class="profit-view dashboard-section spreadsheet-section">
   <div class="spreadsheet-card">
     <div class="spreadsheet-toolbar">
       <div>
         <h3>Livro de atividades</h3>
-        <p>Cada linha representa um registro salvo no Firebase.</p>
+        <p>Cada linha representa um registro.</p>
       </div>
       <div class="spreadsheet-actions">
         <input id="profitSearch" type="search" placeholder="Buscar conteúdo ou item...">
@@ -350,6 +330,21 @@
     <div class="spreadsheet-footer">
       <span id="tableResultCount">0 registros</span>
       <span id="tableTotalNet">Lucro exibido: 0</span>
+    </div>
+  </div>
+</div>
+
+<div class="profit-view dashboard-section">
+  <div class="chart-box trend-chart-box">
+    <div class="chart-title-row">
+      <div>
+        <span class="chart-eyebrow">Performance</span>
+        <h3>Evolução do lucro líquido</h3>
+        <p>Comparativo dos resultados no período filtrado</p>
+      </div>
+    </div>
+    <div class="trend-chart-wrapper">
+      <canvas id="trendChart"></canvas>
     </div>
   </div>
 </div>
