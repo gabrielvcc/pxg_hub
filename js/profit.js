@@ -575,6 +575,7 @@ function setupDashboard() {
     collection(db, "profits"),
     (snapshot) => {
       profits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateDateFilterOptions();
       renderDashboard();
       renderPricingReport();
     },
@@ -583,6 +584,69 @@ function setupDashboard() {
       showToast("Não foi possível carregar os profits");
     }
   );
+}
+
+function updateDateFilterOptions() {
+  const select = document.getElementById("dateFilter");
+  if (!select) return;
+
+  const previousValue = select.value;
+  const now = new Date();
+  const currentMonthKey = getMonthKey(now);
+  const availableMonths = new Set();
+
+  profits.forEach(profit => {
+    const date = profit.createdAt?.toDate?.();
+    if (date) availableMonths.add(getMonthKey(date));
+  });
+
+  const sortedMonths = [...availableMonths].sort((a, b) => b.localeCompare(a));
+  select.innerHTML = "";
+
+  if (sortedMonths.length) {
+    const monthsGroup = document.createElement("optgroup");
+    monthsGroup.label = "Meses com registros";
+
+    sortedMonths.forEach(monthKey => {
+      const option = document.createElement("option");
+      option.value = `month:${monthKey}`;
+      option.textContent = formatMonthFilterLabel(monthKey, monthKey === currentMonthKey);
+      monthsGroup.appendChild(option);
+    });
+
+    select.appendChild(monthsGroup);
+  }
+
+  const periodsGroup = document.createElement("optgroup");
+  periodsGroup.label = "Períodos gerais";
+  periodsGroup.innerHTML = `
+    <option value="year">Ano atual</option>
+    <option value="all">Desde sempre</option>
+  `;
+  select.appendChild(periodsGroup);
+
+  const normalizedPreviousValue = previousValue === "month"
+    ? `month:${currentMonthKey}`
+    : previousValue;
+  const optionStillExists = [...select.options].some(option => option.value === normalizedPreviousValue);
+
+  select.value = optionStillExists
+    ? normalizedPreviousValue
+    : (sortedMonths.length ? `month:${sortedMonths[0]}` : "all");
+}
+
+function getMonthKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function formatMonthFilterLabel(monthKey, isCurrentMonth = false) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const label = new Date(year, month - 1, 1).toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric"
+  });
+  const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+  return isCurrentMonth ? `${capitalizedLabel} (mês atual)` : capitalizedLabel;
 }
 
 function setupPricingReport() {
@@ -1164,7 +1228,7 @@ async function loadItemPriceHistory(itemId) {
 }
 
 function renderDashboard() {
-  const dateFilter = document.getElementById("dateFilter")?.value || "month";
+  const dateFilter = document.getElementById("dateFilter")?.value || "all";
   const contentFilter = document.getElementById("contentFilter")?.value || "all";
   const now = new Date();
 
@@ -1177,6 +1241,10 @@ function renderDashboard() {
 
     if (dateFilter === "year") {
       return createdAt.getFullYear() === now.getFullYear();
+    }
+
+    if (dateFilter.startsWith("month:")) {
+      return getMonthKey(createdAt) === dateFilter.slice("month:".length);
     }
 
     return createdAt.getFullYear() === now.getFullYear()
@@ -1244,7 +1312,7 @@ function renderTrendChart(data, dateFilter) {
     const date = profit.createdAt?.toDate?.();
     if (!date) return;
 
-    const key = dateFilter === "month"
+    const key = dateFilter === "month" || dateFilter.startsWith("month:")
       ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
       : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
