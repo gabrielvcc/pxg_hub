@@ -74,10 +74,7 @@ function setupAuth() {
       initializeItemCatalog();
     } else {
       document.body.classList.remove("admin");
-      unsubscribePriceCatalog?.();
-      unsubscribePriceCatalog = null;
-      catalogInitializationPromise = null;
-      catalogPrices = {};
+      subscribeItemCatalog();
     }
 
     if (avatar) {
@@ -764,7 +761,8 @@ function subscribeItemCatalog() {
       const normalized = normalizeCatalogItem(data);
       catalogPrices[data.name.toLowerCase()] = { ...normalized, id: priceDoc.id };
 
-      if (data.image == null || data.type == null || data.buy == null || data.sell == null) {
+      const isAdmin = currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      if (isAdmin && (data.image == null || data.type == null || data.buy == null || data.sell == null)) {
         migrations.push(setDoc(priceDoc.ref, normalized, { merge: true }));
       }
     });
