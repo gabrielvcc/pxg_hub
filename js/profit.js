@@ -773,6 +773,7 @@ function subscribeItemCatalog() {
     }
     renderPricingReport();
     renderCatalog();
+    renderMonthlyDropHighlight(document.getElementById("dateFilter")?.value || "all");
   }, error => {
     console.error("Erro ao carregar catálogo de preços:", error);
     unsubscribePriceCatalog = null;
@@ -1261,10 +1262,87 @@ function renderDashboard() {
     return result;
   }, { gains: {}, costs: {} });
 
+  renderMonthlyDropHighlight(dateFilter);
   renderKpis(filteredProfits);
   renderCharts(totals);
   renderTrendChart(filteredProfits, dateFilter);
   renderTable();
+}
+
+function renderMonthlyDropHighlight(dateFilter = "all") {
+  const card = document.getElementById("monthlyDropHighlight");
+  if (!card) return;
+
+  const now = new Date();
+  const data = profits.filter(profit => {
+    const date = getProfitDate(profit);
+    if (dateFilter === "all") return true;
+    if (!date) return false;
+    if (dateFilter === "year") return date.getFullYear() === now.getFullYear();
+    if (dateFilter.startsWith("month:")) return getMonthKey(date) === dateFilter.slice(6);
+    return getMonthKey(date) === getMonthKey(now);
+  });
+
+  const candidates = data.flatMap(profit => Object.entries(profit.loot || {}).map(([name, quantity]) => {
+    const gains = profit.prices?.gains || {};
+    const priceKey = findItemKey(gains, name);
+    const unitPrice = Number(priceKey ? gains[priceKey] : 0);
+    return {
+      name,
+      quantity: Number(quantity || 0),
+      unitPrice,
+      totalValue: unitPrice * Number(quantity || 0),
+      type: profit.type || "",
+      date: getProfitDate(profit)
+    };
+  })).filter(item => item.quantity > 0 && item.unitPrice > 0);
+
+  const image = document.getElementById("monthlyDropImage");
+  const fallback = document.getElementById("monthlyDropImageFallback");
+  document.getElementById("monthlyDropEyebrow").textContent = `Drop destaque · ${getDropHighlightPeriodLabel(dateFilter)}`;
+
+  if (!candidates.length) {
+    card.classList.add("is-empty");
+    document.getElementById("monthlyDropName").textContent = "Nenhum drop precificado neste período";
+    document.getElementById("monthlyDropContext").textContent = "Assim que houver loot com valor histórico, o maior destaque aparecerá aqui.";
+    document.getElementById("monthlyDropValue").textContent = "—";
+    document.getElementById("monthlyDropQuantity").textContent = "—";
+    image?.classList.add("hidden");
+    fallback?.classList.remove("hidden");
+    return;
+  }
+
+  const highlight = candidates.sort((a, b) => b.unitPrice - a.unitPrice || b.totalValue - a.totalValue)[0];
+  const catalogItem = catalogPrices[highlight.name.toLowerCase()];
+
+  card.classList.remove("is-empty");
+  document.getElementById("monthlyDropName").textContent = highlight.name;
+  const dropDate = highlight.date?.toLocaleDateString("pt-BR") || "Data não informada";
+  document.getElementById("monthlyDropContext").textContent = `${formatContentType(highlight.type)} · ${dropDate} · valor total ${formatMoney(highlight.totalValue)}`;
+  document.getElementById("monthlyDropValue").textContent = formatMoney(highlight.unitPrice);
+  document.getElementById("monthlyDropQuantity").textContent = formatItemQuantity(highlight.quantity);
+
+  image?.classList.add("hidden");
+  fallback?.classList.remove("hidden");
+  if (image && catalogItem?.image) {
+    image.onload = () => {
+      image.classList.remove("hidden");
+      fallback?.classList.add("hidden");
+    };
+    image.onerror = () => {
+      image.classList.add("hidden");
+      fallback?.classList.remove("hidden");
+    };
+    image.src = catalogItem.image;
+  } else if (image) {
+    image.removeAttribute("src");
+  }
+}
+
+function getDropHighlightPeriodLabel(dateFilter) {
+  if (dateFilter.startsWith("month:")) return formatMonthFilterLabel(dateFilter.slice(6));
+  if (dateFilter === "year") return "Ano atual";
+  return "Histórico completo";
 }
 
 function renderKpis(data) {
