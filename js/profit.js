@@ -25,7 +25,47 @@ let unsubscribeProfits = null;
 let unsubscribePriceCatalog = null;
 let filteredProfits = [];
 let catalogPrices = {};
+let catalogSearchIndex = [];
 let catalogInitializationPromise = null;
+let profitPresets = [];
+let unsubscribeProfitPresets = null;
+let selectedProfitPresetId = null;
+
+const PROFIT_PRESET_SEED = [
+  ["md_red", "Alpha Hisuian Arcanine", "https://wiki.pokexgames.com/images/d/d0/Banner_Bolinha_MD_-_Alpha_Hisuian_Arcanine.webp"],
+  ["md_red", "Alpha Hisuian Electrode", "https://wiki.pokexgames.com/images/3/32/Banner_Bolinha_MD_-_Alpha_Hisuian_Electrode.webp"],
+  ["md_red", "Alpha Hisuian Typhlosion", "https://wiki.pokexgames.com/images/1/13/Banner_Bolinha_MD_-_Alpha_Hisuian_Typhlosion.webp"],
+  ["md_red", "Alpha Kleavor", "https://wiki.pokexgames.com/images/5/5e/Banner_Bolinha_MD_-_Alpha_Kleavor.webp"],
+  ["md_red", "Alpha Overqwil", "https://wiki.pokexgames.com/images/8/84/Banner_Bolinha_MD_-_Alpha_Overqwil.webp"],
+  ["md_red", "Alpha Sneasler", "https://wiki.pokexgames.com/images/4/44/Banner_Bolinha_MD_-_Alpha_Sneasler.webp"],
+  ["md_red", "Alpha Ursaluna", "https://wiki.pokexgames.com/images/6/6f/Banner_Bolinha_MD_-_Alpha_Ursaluna.webp"],
+  ["md_red", "Below Zero", "https://wiki.pokexgames.com/images/9/92/Banner_Bolinha_MD_-_Below_Zero.webp"],
+  ["md_red", "Celebi - Wood (Suicune)", "https://wiki.pokexgames.com/images/d/df/Banner_Bolinha_MD_-_Celebi_-_Wood_%28Suicune%29.webp"],
+  ["md_red", "Dark Celebi", "https://wiki.pokexgames.com/images/4/47/Banner_Bolinha_MD_-_Dark_Celebi.webp"],
+  ["md_red", "Defeat The Darkness", "https://wiki.pokexgames.com/images/7/74/Banner_Bolinha_MD_-_Defeat_The_Darkness.webp"],
+  ["md_red", "Dorabelle's Wrath", "https://wiki.pokexgames.com/images/7/7f/Banner_Bolinha_MD_-_Dorabelle%27s_Wrath.webp"],
+  ["md_red", "Johto Pokémon League", "https://wiki.pokexgames.com/images/1/1b/Banner_Bolinha_MD_-_Johto_Pokémon_League.webp"],
+  ["md_red", "Mecha Iron-Masked Marauder", "https://wiki.pokexgames.com/images/d/d0/Banner_Bolinha_MD_-_Mecha_Iron-Masked_Marauder.webp"],
+  ["md_red", "Muchmoney and The Runaway Precious", "https://wiki.pokexgames.com/images/d/d6/Banner_Bolinha_MD_-_Muchmoney_and_The_Runaway_Precious.webp"],
+  ["md_red", "The Celestial Serpent", "https://wiki.pokexgames.com/images/a/ab/Banner_Bolinha_MD_-_The_Celestial_Serpent.webp"],
+  ["md_red", "The Darkness", "https://wiki.pokexgames.com/images/1/1f/Banner_Bolinha_MD_-_The_Darkness.webp"],
+  ["md_red", "The Magma Insurgency", "https://wiki.pokexgames.com/images/9/98/Banner_Bolinha_MD_-_The_Magma_Insurgency.webp"],
+  ["md_red", "The Red Gyarados", "https://wiki.pokexgames.com/images/f/fa/Banner_Bolinha_MD_-_The_Red_Gyarados.webp"],
+  ["terror_hard", "Kairiki", "https://wiki.pokexgames.com/images/1/13/Banner_Kairiki.png"],
+  ["terror_hard", "Kame", "https://wiki.pokexgames.com/images/b/bb/Banner_Kame.png"],
+  ["terror_hard", "Ptera", "https://wiki.pokexgames.com/images/b/b6/Banner_Ptera.png"],
+  ["terror_hard", "Gama", "https://wiki.pokexgames.com/images/5/53/Banner_Gama.png"],
+  ["terror_hard", "Riza", "https://wiki.pokexgames.com/images/a/a8/Banner_Riza.png"],
+  ["terror_hard", "Raito", "https://wiki.pokexgames.com/images/8/8a/Banner_Raito.png"],
+  ["terror_hard", "Gyakkyo", "https://wiki.pokexgames.com/images/2/2b/Banner_Gyakkyo.png"],
+  ["terror_hard", "Seishin & Yurei", "https://wiki.pokexgames.com/images/2/24/Banner_Seishin_%26_Yurei.png"],
+  ["terror_hard", "Kitsune", "https://wiki.pokexgames.com/images/c/ce/Banner_Kitsune.png"],
+  ["terror_hard", "Desconhecido", "https://wiki.pokexgames.com/images/5/5f/Banner_Terror_do_Desconhecido.png"],
+  ["legendary_dogs", "Entei", "https://wiki.pokexgames.com/images/c/cb/Banner_Entei.png"],
+  ["legendary_dogs", "Raikou", "https://wiki.pokexgames.com/images/0/09/Banner_Raikou.png"],
+  ["legendary_dogs", "Suicune", "https://wiki.pokexgames.com/images/b/b8/Banner_Suicune.png"],
+  ["dg_shiny_tentacruel", "Shiny Giant Tentacruel", "https://wiki.pokexgames.com/images/3/37/Shiny_Giant_Tentacruel_Banner.png"]
+];
 
 // INIT
 document.addEventListener("DOMContentLoaded", async () => {
@@ -35,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupDashboard();
   setupPricingReport();
   setupCatalogUI();
+  setupProfitPresetUI();
   applyChartTheme();
   window.addEventListener("themechange", () => {
     applyChartTheme();
@@ -72,9 +113,16 @@ function setupAuth() {
     if (isAdmin) {
       document.body.classList.add("admin");
       initializeItemCatalog();
+      initializeProfitPresets().catch(error => {
+        console.error("Erro ao inicializar presets:", error);
+        showToast("Sem permissão para inicializar os presets");
+      });
     } else {
       document.body.classList.remove("admin");
       subscribeItemCatalog();
+      unsubscribeProfitPresets?.();
+      unsubscribeProfitPresets = null;
+      profitPresets = [];
     }
 
     if (avatar) {
@@ -109,7 +157,16 @@ function setupUI() {
     if (e.target === modal) modal.classList.add("hidden");
   };
 
+  document.addEventListener("click", event => {
+    if (event.target.closest(".item-select")) return;
+    document.querySelectorAll(".item-dropdown:not(.hidden)").forEach(dropdown => {
+      dropdown.classList.add("hidden");
+    });
+  });
+
   entryType.onchange = () => {
+    selectedProfitPresetId = null;
+    renderProfitPresetChoices(entryType.value);
     if (entryType.value === "hunt") {
       textarea.classList.add("hidden");
       manualForm.classList.remove("hidden");
@@ -132,7 +189,7 @@ function setupUI() {
 }
 
 // ================= ROW =================
-function createItemRow(container, type) {
+function createItemRow(container, type, initialItem = null) {
   const row = document.createElement("div");
   row.className = "item-row";
 
@@ -152,33 +209,47 @@ function createItemRow(container, type) {
 
   const input = row.querySelector(".item-search");
   const dropdown = row.querySelector(".item-dropdown");
-  row.querySelector(".remove-item-btn").onclick = () => row.remove();
+  let pendingSearchFrame = null;
+  row.querySelector(".remove-item-btn").onclick = () => {
+    if (pendingSearchFrame) cancelAnimationFrame(pendingSearchFrame);
+    row.remove();
+  };
 
   input.onfocus = () => {
     dropdown.classList.remove("hidden");
-    createDropdownOptions(dropdown, "", type);
-  };
-
-  input.oninput = () => {
     createDropdownOptions(dropdown, input.value, type);
   };
 
-  document.addEventListener("click", (e) => {
-    if (!row.contains(e.target)) {
-      dropdown.classList.add("hidden");
-    }
-  });
   input.oninput = () => {
-  const preview = row.querySelector(".item-preview");
-
-  // se apagar texto → remove imagem
-  if (!input.value) {
+    const preview = row.querySelector(".item-preview");
     preview.classList.add("hidden");
+    preview.removeAttribute("src");
     delete input.dataset.selected;
-  }
 
-  createDropdownOptions(dropdown, input.value, type);
-};
+    dropdown.classList.remove("hidden");
+    if (pendingSearchFrame) cancelAnimationFrame(pendingSearchFrame);
+    pendingSearchFrame = requestAnimationFrame(() => {
+      createDropdownOptions(dropdown, input.value, type);
+      pendingSearchFrame = null;
+    });
+  };
+
+  dropdown.onclick = event => {
+    const option = event.target.closest(".item-option[data-item-key]");
+    if (option) selectDropdownItem(dropdown, option.dataset.itemKey);
+  };
+
+  if (initialItem?.name) {
+    const catalogItem = catalogPrices[initialItem.name.toLowerCase()];
+    input.value = catalogItem?.name || initialItem.name;
+    input.dataset.selected = catalogItem?.name || initialItem.name;
+    row.querySelector(".item-qty").value = Number(initialItem.quantity || 1);
+    const preview = row.querySelector(".item-preview");
+    if (catalogItem?.image) {
+      preview.src = catalogItem.image;
+      preview.classList.remove("hidden");
+    }
+  }
 }
 
 // ================= SAVE =================
@@ -257,6 +328,9 @@ const profitPerHour = (netProfit / totalMinutes) * 60;
         userId: currentUser?.uid || null,
         userEmail: currentUser?.email || null,
         type,
+        presetId: selectedProfitPresetId || null,
+        presetName: profitPresets.find(preset => preset.id === selectedProfitPresetId)?.name || null,
+        subgroup: profitPresets.find(preset => preset.id === selectedProfitPresetId)?.name || null,
         loot: parsedLoot,
         costs: parsedCosts,
         prices: {
@@ -288,6 +362,8 @@ const profitPerHour = (netProfit / totalMinutes) * 60;
       document.getElementById("hoursInput").value = "";
       document.getElementById("minutesInput").value = "";
       entryType.value = "";
+      selectedProfitPresetId = null;
+      renderProfitPresetChoices("");
       textarea.classList.remove("hidden");
       document.getElementById("manualForm").classList.add("hidden");
 
@@ -299,25 +375,29 @@ const profitPerHour = (netProfit / totalMinutes) * 60;
 }
 
 function createDropdownOptions(container, filter = "", typeFilter = null) {
-  container.innerHTML = "";
+  const filterLower = filter.trim().toLocaleLowerCase("pt-BR");
+  const matches = [];
 
-  const filterLower = filter.toLowerCase();
+  for (const item of catalogSearchIndex) {
+    if (typeFilter && item.type !== typeFilter && item.type !== "both") continue;
+    if (filterLower && !item.searchName.includes(filterLower)) continue;
+    matches.push(item);
+    if (matches.length >= 40) break;
+  }
 
-  getAvailableItems().forEach(item => {
+  container.innerHTML = matches.length
+    ? matches.map(item => `
+      <button class="item-option" type="button" data-item-key="${escapeHtml(item.key)}">
+        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy" decoding="async">` : ""}
+        <span>${escapeHtml(item.name)}</span>
+      </button>
+    `).join("")
+    : '<div class="item-dropdown-empty">Nenhum item encontrado</div>';
+}
 
-    if (typeFilter && item.type !== typeFilter && item.type !== "both") return;
-
-    if (!item.name.toLowerCase().includes(filterLower)) return;
-
-    const option = document.createElement("div");
-    option.className = "item-option";
-
-    option.innerHTML = `
-      ${item.image ? `<img src="${item.image}" alt="">` : ""}
-      <span>${item.name}</span>
-    `;
-
-    option.onclick = () => {
+function selectDropdownItem(container, itemKey) {
+  const item = catalogPrices[itemKey];
+  if (!item) return;
   const wrapper = container.parentElement;
   const input = wrapper.querySelector(".item-search");
   const preview = wrapper.querySelector(".item-preview");
@@ -334,10 +414,6 @@ function createDropdownOptions(container, filter = "", typeFilter = null) {
   }
 
   container.classList.add("hidden");
-};
-
-    container.appendChild(option);
-  });
 }
 
 // ================= CALC =================
@@ -766,6 +842,13 @@ function subscribeItemCatalog() {
         migrations.push(setDoc(priceDoc.ref, normalized, { merge: true }));
       }
     });
+    catalogSearchIndex = Object.entries(catalogPrices)
+      .map(([key, item]) => ({
+        ...item,
+        key,
+        searchName: item.name.toLocaleLowerCase("pt-BR")
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
     if (migrations.length) {
       Promise.all(migrations).catch(error => console.error("Erro ao normalizar catálogo:", error));
     }
@@ -980,6 +1063,234 @@ function getItemStatus(item) {
       ? buy > 0
       : buy > 0 && sell > 0;
   return hasRequiredPrice ? "priced" : "pending";
+}
+
+// ================= PROFIT PRESETS =================
+async function initializeProfitPresets() {
+  await seedOfficialProfitPresets();
+  subscribeProfitPresets();
+}
+
+async function seedOfficialProfitPresets() {
+  const snapshot = await getDocs(collection(db, "profitPresets"));
+  const existingIds = new Set(snapshot.docs.map(presetDoc => presetDoc.id));
+  const seedMarkerId = "_official_seed_v2";
+  if (existingIds.has(seedMarkerId)) return;
+  const missing = PROFIT_PRESET_SEED.filter(([type, name]) => !existingIds.has(getProfitPresetId(type, name)));
+
+  const batch = writeBatch(db);
+  missing.forEach(([type, name, image]) => {
+    batch.set(doc(db, "profitPresets", getProfitPresetId(type, name)), {
+      name,
+      type,
+      image,
+      timeMinutes: 0,
+      costs: {},
+      active: true,
+      source: "PokeXGames Wiki",
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  });
+  batch.set(doc(db, "profitPresets", seedMarkerId), {
+    kind: "migration",
+    version: 2,
+    completedAt: serverTimestamp()
+  });
+  await batch.commit();
+}
+
+function subscribeProfitPresets() {
+  if (unsubscribeProfitPresets) return;
+  unsubscribeProfitPresets = onSnapshot(collection(db, "profitPresets"), snapshot => {
+    profitPresets = snapshot.docs
+      .map(presetDoc => ({ id: presetDoc.id, ...presetDoc.data() }))
+      .filter(preset => preset.name && preset.type)
+      .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    renderProfitPresetChoices(document.getElementById("entryType")?.value || "");
+    renderProfitPresetAdmin();
+  }, error => {
+    console.error("Erro ao carregar presets:", error);
+    showToast("Não foi possível carregar os presets");
+    unsubscribeProfitPresets = null;
+  });
+}
+
+function getProfitPresetId(type, name) {
+  return `${type}--${encodeURIComponent(name.trim().toLowerCase())}`;
+}
+
+function renderProfitPresetChoices(contentType) {
+  const field = document.getElementById("profitPresetField");
+  const choices = document.getElementById("profitPresetChoices");
+  if (!field || !choices) return;
+
+  const supportsPresets = ["md_red", "terror_hard", "legendary_dogs", "dg_shiny_tentacruel"].includes(contentType);
+  field.classList.toggle("hidden", !supportsPresets);
+  if (!supportsPresets) {
+    choices.innerHTML = "";
+    document.getElementById("selectedPresetLabel").textContent = "Nenhum selecionado";
+    return;
+  }
+
+  const available = profitPresets.filter(preset => preset.type === contentType && preset.active !== false);
+  choices.innerHTML = available.length ? available.map(preset => `
+    <button class="profit-preset-choice ${preset.id === selectedProfitPresetId ? "selected" : ""}" type="button" data-profit-preset="${encodeURIComponent(preset.id)}">
+      <span class="profit-preset-choice-image">
+        ${preset.image ? `<img src="${escapeHtml(preset.image)}" alt="" loading="lazy" decoding="async">` : "<b>◇</b>"}
+      </span>
+      <span><strong>${escapeHtml(preset.name)}</strong><small>${formatPresetSummary(preset)}</small></span>
+    </button>
+  `).join("") : '<div class="preset-empty">Nenhum preset disponível para este conteúdo.</div>';
+}
+
+function setupProfitPresetUI() {
+  document.getElementById("profitPresetChoices")?.addEventListener("click", event => {
+    const choice = event.target.closest("[data-profit-preset]");
+    if (choice) applyProfitPreset(decodeURIComponent(choice.dataset.profitPreset));
+  });
+  document.getElementById("newProfitPresetBtn")?.addEventListener("click", () => openProfitPresetModal());
+  document.getElementById("closeProfitPresetModal")?.addEventListener("click", closeProfitPresetModal);
+  document.getElementById("profitPresetModal")?.addEventListener("click", event => {
+    if (event.target.id === "profitPresetModal") closeProfitPresetModal();
+  });
+  document.getElementById("profitPresetForm")?.addEventListener("submit", saveProfitPreset);
+  document.getElementById("deleteProfitPresetBtn")?.addEventListener("click", deleteProfitPreset);
+  document.getElementById("profitPresetGrid")?.addEventListener("click", event => {
+    const card = event.target.closest("[data-preset-admin-id]");
+    if (card) openProfitPresetModal(decodeURIComponent(card.dataset.presetAdminId));
+  });
+  document.getElementById("presetSearch")?.addEventListener("input", renderProfitPresetAdmin);
+  document.getElementById("presetTypeFilter")?.addEventListener("change", renderProfitPresetAdmin);
+}
+
+function applyProfitPreset(presetId) {
+  const preset = profitPresets.find(entry => entry.id === presetId);
+  if (!preset) return;
+
+  selectedProfitPresetId = preset.id;
+  const costContainer = document.getElementById("costContainer");
+  costContainer.replaceChildren();
+  Object.entries(preset.costs || {}).forEach(([name, quantity]) => {
+    createItemRow(costContainer, "supply", { name, quantity });
+  });
+
+  const minutes = Number(preset.timeMinutes || 0);
+  document.getElementById("hoursInput").value = Math.floor(minutes / 60) || "";
+  document.getElementById("minutesInput").value = minutes % 60 || "";
+  document.getElementById("selectedPresetLabel").textContent = preset.name;
+  renderProfitPresetChoices(preset.type);
+  showToast(`${preset.name}: supplies e tempo preenchidos`);
+}
+
+function formatPresetSummary(preset) {
+  const costCount = Object.keys(preset.costs || {}).length;
+  const duration = Number(preset.timeMinutes || 0) ? formatDuration(preset.timeMinutes) : "tempo pendente";
+  return `${duration} · ${costCount} ${costCount === 1 ? "supply" : "supplies"}`;
+}
+
+function renderProfitPresetAdmin() {
+  const grid = document.getElementById("profitPresetGrid");
+  if (!grid) return;
+  const search = document.getElementById("presetSearch")?.value.trim().toLowerCase() || "";
+  const type = document.getElementById("presetTypeFilter")?.value || "all";
+
+  document.getElementById("presetTotal").textContent = profitPresets.length;
+  document.getElementById("presetMdTotal").textContent = profitPresets.filter(preset => preset.type === "md_red").length;
+  document.getElementById("presetTerrorTotal").textContent = profitPresets.filter(preset => preset.type === "terror_hard").length;
+
+  const visible = profitPresets.filter(preset => {
+    return (!search || preset.name.toLowerCase().includes(search)) && (type === "all" || preset.type === type);
+  });
+  grid.innerHTML = visible.length ? visible.map(preset => {
+    const configured = Number(preset.timeMinutes || 0) > 0 || Object.keys(preset.costs || {}).length > 0;
+    return `<article class="profit-preset-admin-card" data-preset-admin-id="${encodeURIComponent(preset.id)}">
+      <div class="profit-preset-admin-image">${preset.image ? `<img src="${escapeHtml(preset.image)}" alt="" loading="lazy">` : "◇"}</div>
+      <div class="profit-preset-admin-info">
+        <span>${escapeHtml(formatContentType(preset.type))}</span>
+        <h3>${escapeHtml(preset.name)}</h3>
+        <p>${formatPresetSummary(preset)}</p>
+        <div><b class="${configured ? "configured" : "pending"}">${configured ? "Configurado" : "A configurar"}</b>${preset.active === false ? "<b>Inativo</b>" : ""}</div>
+      </div>
+    </article>`;
+  }).join("") : '<div class="catalog-empty">Nenhum preset encontrado.</div>';
+}
+
+function openProfitPresetModal(presetId = null) {
+  const preset = presetId ? profitPresets.find(entry => entry.id === presetId) : null;
+  document.getElementById("profitPresetId").value = preset?.id || "";
+  document.getElementById("profitPresetName").value = preset?.name || "";
+  document.getElementById("profitPresetType").value = preset?.type || "md_red";
+  document.getElementById("profitPresetImage").value = preset?.image || "";
+  document.getElementById("profitPresetHours").value = Math.floor(Number(preset?.timeMinutes || 0) / 60);
+  document.getElementById("profitPresetMinutes").value = Number(preset?.timeMinutes || 0) % 60;
+  document.getElementById("profitPresetCosts").value = Object.entries(preset?.costs || {}).map(([name, quantity]) => `${name}: ${quantity}`).join("\n");
+  document.getElementById("profitPresetActive").checked = preset?.active !== false;
+  document.getElementById("profitPresetModalTitle").textContent = preset?.name || "Novo preset";
+  document.getElementById("deleteProfitPresetBtn").classList.toggle("hidden", !preset);
+  document.getElementById("profitPresetModal").classList.remove("hidden");
+}
+
+function closeProfitPresetModal() {
+  document.getElementById("profitPresetModal")?.classList.add("hidden");
+}
+
+function parsePresetCosts(text) {
+  return text.split(/\r?\n/).reduce((costs, line) => {
+    const separator = line.lastIndexOf(":");
+    if (separator < 1) return costs;
+    const name = line.slice(0, separator).trim();
+    const quantity = Number(line.slice(separator + 1).trim().replace(",", "."));
+    const canonicalName = catalogPrices[name.toLowerCase()]?.name || name;
+    if (canonicalName && quantity > 0) costs[canonicalName] = quantity;
+    return costs;
+  }, {});
+}
+
+async function saveProfitPreset(event) {
+  event.preventDefault();
+  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  const currentId = document.getElementById("profitPresetId").value;
+  const name = document.getElementById("profitPresetName").value.trim();
+  const type = document.getElementById("profitPresetType").value;
+  const hours = Number(document.getElementById("profitPresetHours").value || 0);
+  const minutes = Number(document.getElementById("profitPresetMinutes").value || 0);
+  const presetId = currentId || getProfitPresetId(type, name);
+  const button = document.getElementById("saveProfitPresetBtn");
+  button.disabled = true;
+  try {
+    await setDoc(doc(db, "profitPresets", presetId), {
+      name,
+      type,
+      image: document.getElementById("profitPresetImage").value.trim(),
+      timeMinutes: hours * 60 + minutes,
+      costs: parsePresetCosts(document.getElementById("profitPresetCosts").value),
+      active: document.getElementById("profitPresetActive").checked,
+      updatedAt: serverTimestamp(),
+      ...(currentId ? {} : { createdAt: serverTimestamp() })
+    }, { merge: true });
+    closeProfitPresetModal();
+    showToast("Preset salvo com sucesso");
+  } catch (error) {
+    console.error("Erro ao salvar preset:", error);
+    showToast("Erro ao salvar preset");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function deleteProfitPreset() {
+  const presetId = document.getElementById("profitPresetId").value;
+  const preset = profitPresets.find(entry => entry.id === presetId);
+  if (!preset || !window.confirm(`Excluir o preset "${preset.name}"?`)) return;
+  try {
+    await deleteDoc(doc(db, "profitPresets", presetId));
+    closeProfitPresetModal();
+    showToast("Preset excluído");
+  } catch (error) {
+    console.error("Erro ao excluir preset:", error);
+    showToast("Erro ao excluir preset");
+  }
 }
 
 function setupCatalogUI() {
@@ -1446,7 +1757,7 @@ function renderTable() {
       return `<tr>
         <td class="cell-number">${index + 1}</td>
         <td>${date ? escapeHtml(date.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })) : "—"}</td>
-        <td><span class="content-badge">${escapeHtml(formatContentType(profit.type))}</span></td>
+        <td><span class="content-badge">${escapeHtml(formatContentType(profit.type))}</span>${profit.subgroup || profit.presetName ? `<small class="content-preset-name">${escapeHtml(profit.subgroup || profit.presetName)}</small>` : ""}</td>
         <td class="money-gain">${formatMoney(profit.totalProfit)}</td>
         <td class="money-cost">${formatMoney(profit.totalCost)}</td>
         <td class="money-net ${net < 0 ? "negative" : ""}">${formatMoney(net)}</td>
@@ -1590,10 +1901,11 @@ function formatItemQuantity(quantity) {
 function exportProfitsCsv() {
   if (!filteredProfits.length) return showToast("Não há registros para exportar");
 
-  const header = ["Data", "Conteúdo", "Ganhos", "Gastos", "Lucro líquido", "Tempo (min)", "Lucro/h", "Loot", "Suprimentos"];
+  const header = ["Data", "Conteúdo", "Subgrupo", "Ganhos", "Gastos", "Lucro líquido", "Tempo (min)", "Lucro/h", "Loot", "Suprimentos"];
   const rows = filteredProfits.map(profit => [
     getProfitDate(profit)?.toLocaleString("pt-BR") || "",
     formatContentType(profit.type),
+    profit.subgroup || profit.presetName || "",
     Number(profit.totalProfit || 0),
     Number(profit.totalCost || 0),
     Number(profit.netProfit || 0),
@@ -1619,7 +1931,7 @@ function getProfitDate(profit) {
 }
 
 function getProfitSearchText(profit) {
-  return [formatContentType(profit.type), ...Object.keys(profit.loot || {}), ...Object.keys(profit.costs || {})]
+  return [formatContentType(profit.type), profit.subgroup || profit.presetName || "", ...Object.keys(profit.loot || {}), ...Object.keys(profit.costs || {})]
     .join(" ")
     .toLowerCase();
 }

@@ -36,6 +36,7 @@
       <!-- div class="nav-item" data-page="makers">Makers</div> -->
       <div class="nav-item" data-page="profit">Profits</div>
       <div class="nav-item admin-nav-item" data-page="itemsCatalog">Catálogo</div>
+      <div class="nav-item admin-nav-item" data-page="profitPresets">Presets</div>
       <!--<div class="nav-item" data-page="logs">Updates/Logs</div> -->
     </nav>
     <div class="theme-switcher" aria-label="Tema da interface">
@@ -164,6 +165,17 @@
               <option value="subject_14">Subject #14</option>
             </select>
           </label>
+
+          <section id="profitPresetField" class="profit-preset-field hidden">
+            <div class="profit-preset-heading">
+              <div>
+                <span>Subcategoria</span>
+                <small>Escolha um preset para preencher supplies e tempo automaticamente.</small>
+              </div>
+              <strong id="selectedPresetLabel">Nenhum selecionado</strong>
+            </div>
+            <div id="profitPresetChoices" class="profit-preset-choices"></div>
+          </section>
 
           <div class="profit-entry-layout">
             <section class="profit-entry-panel gain-panel">
@@ -364,6 +376,94 @@
     </div>
   </div>
 </div>
+    </section>
+
+    <!-- PRESETS DE PROFIT -->
+    <section class="page" id="profitPresets">
+      <div class="catalog-page-header">
+        <div>
+          <span class="catalog-eyebrow">Automação de lançamentos</span>
+          <h1>Presets de Profit</h1>
+          <p>Configure supplies e duração uma vez para preencher os próximos registros automaticamente.</p>
+        </div>
+        <button id="newProfitPresetBtn" class="catalog-primary-btn" type="button">+ Novo preset</button>
+      </div>
+
+      <div class="catalog-summary preset-summary">
+        <div><span>Total</span><strong id="presetTotal">0</strong></div>
+        <div><span>MD Red</span><strong id="presetMdTotal">0</strong></div>
+        <div><span>Terror Hard</span><strong id="presetTerrorTotal">0</strong></div>
+      </div>
+
+      <div class="catalog-toolbar">
+        <input id="presetSearch" type="search" placeholder="Buscar preset...">
+        <select id="presetTypeFilter">
+          <option value="all">Todos os conteúdos</option>
+          <option value="md_red">MD Red</option>
+          <option value="terror_hard">Terror (Hard)</option>
+          <option value="legendary_dogs">Cães Lendários</option>
+          <option value="dg_shiny_tentacruel">DG Shiny Tentacruel</option>
+        </select>
+      </div>
+
+      <div id="profitPresetGrid" class="profit-preset-admin-grid"></div>
+
+      <div id="profitPresetModal" class="modal hidden">
+        <div class="modal-content preset-modal-content">
+          <div class="catalog-modal-header">
+            <div>
+              <span class="catalog-eyebrow">Automação</span>
+              <h2 id="profitPresetModalTitle">Novo preset</h2>
+            </div>
+            <button id="closeProfitPresetModal" type="button" aria-label="Fechar">×</button>
+          </div>
+
+          <form id="profitPresetForm">
+            <input id="profitPresetId" type="hidden">
+            <div class="catalog-form-grid">
+              <label class="catalog-field catalog-field-wide">
+                <span>Nome da subcategoria</span>
+                <input id="profitPresetName" required placeholder="Ex.: Dorabelle's Wrath">
+              </label>
+              <label class="catalog-field">
+                <span>Conteúdo</span>
+                <select id="profitPresetType" required>
+                  <option value="md_red">MD Red</option>
+                  <option value="terror_hard">Terror (Hard)</option>
+                  <option value="legendary_dogs">Cães Lendários</option>
+                  <option value="dg_shiny_tentacruel">DG Shiny Tentacruel</option>
+                </select>
+              </label>
+              <label class="catalog-field catalog-field-wide">
+                <span>URL do banner</span>
+                <input id="profitPresetImage" type="url" placeholder="https://...">
+              </label>
+              <label class="catalog-field">
+                <span>Horas</span>
+                <input id="profitPresetHours" type="number" min="0" value="0">
+              </label>
+              <label class="catalog-field">
+                <span>Minutos</span>
+                <input id="profitPresetMinutes" type="number" min="0" max="59" value="0">
+              </label>
+              <label class="catalog-field catalog-field-wide">
+                <span>Supplies — um por linha no formato Item: quantidade</span>
+                <textarea id="profitPresetCosts" placeholder="Rindo Berry: 1&#10;Ganlon Berry: 1"></textarea>
+                <small>Use exatamente o nome existente no Catálogo de Itens.</small>
+              </label>
+              <label class="preset-active-field">
+                <input id="profitPresetActive" type="checkbox" checked>
+                <span>Disponível na tela de lançamento</span>
+              </label>
+            </div>
+
+            <div class="catalog-form-actions">
+              <button id="deleteProfitPresetBtn" class="catalog-danger-btn hidden" type="button">Excluir preset</button>
+              <button id="saveProfitPresetBtn" class="catalog-primary-btn" type="submit">Salvar preset</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
 
     <!-- CATÁLOGO DE ITENS -->
