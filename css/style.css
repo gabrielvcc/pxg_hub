@@ -1879,7 +1879,7 @@ body.admin .insert-btn {
 
 .profit-kpis {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   width: min(1200px, 100%);
   margin-bottom: 20px;
@@ -1943,6 +1943,7 @@ body.admin .insert-btn {
 .kpi-gain { --kpi-color: #22c55e; }
 .kpi-cost { --kpi-color: #ef4444; }
 .kpi-net { --kpi-color: #38bdf8; }
+.kpi-time { --kpi-color: #ffaa00; }
 .kpi-hour { --kpi-color: #a78bfa; }
 .profit-kpi.is-negative strong { color: #f87171; }
 
@@ -3361,4 +3362,139 @@ body::before {
   .profile-info { width: 100%; grid-template-columns: 1fr; }
   .profile-ingame { grid-column: 1; grid-row: auto; margin: 18px 0 10px; }
   .profile-header::after { display: none; }
+}
+
+/* Comparativo mensal proporcional e mosaico de atividade */
+.monthly-comparison {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  width: min(1200px, 100%);
+  margin: 0 0 22px;
+  padding: 19px 22px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent-main) 22%, var(--theme-border));
+  border-radius: 18px;
+  background: linear-gradient(115deg, rgba(255, 170, 0, 0.07), transparent 40%), var(--theme-card);
+  box-shadow: 0 14px 35px var(--theme-shadow);
+}
+.monthly-comparison::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #ff4d8d, var(--accent-main), #38bdf8);
+}
+.monthly-comparison-eyebrow {
+  color: var(--accent-main);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.monthly-comparison h3 { margin: 4px 0 5px; color: var(--theme-text); font-size: 17px; }
+.monthly-comparison p { margin: 0; color: var(--theme-muted); font-size: 12px; }
+.monthly-comparison-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(125px, 1fr));
+  flex: 0 1 520px;
+  gap: 8px;
+}
+.monthly-comparison-values > div {
+  display: grid;
+  gap: 5px;
+  padding: 10px 13px;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--theme-elevated) 84%, transparent);
+}
+.monthly-comparison-values span { color: var(--theme-muted); font-size: 10px; white-space: nowrap; }
+.monthly-comparison-values strong { color: var(--theme-text); font-size: 15px; }
+.monthly-comparison.is-positive .monthly-comparison-delta strong { color: #22c55e; }
+.monthly-comparison.is-negative .monthly-comparison-delta strong { color: #ef5d6f; }
+
+.activity-heatmap-section { width: min(1200px, 100%); margin-top: 28px; }
+.activity-heatmap-heading { align-items: flex-end; }
+.activity-heatmap-heading small { display: block; margin-top: 5px; color: var(--theme-muted); }
+.activity-heatmap-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.activity-heatmap-summary span {
+  padding: 7px 10px;
+  border: 1px solid var(--theme-border);
+  border-radius: 999px;
+  background: var(--theme-elevated);
+  color: var(--theme-muted);
+  font-size: 11px;
+}
+.activity-heatmap-summary strong { color: var(--theme-text); }
+.activity-heatmap-card {
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--accent-main) 20%, var(--theme-border));
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 170, 0, .045), transparent 45%), var(--theme-card);
+  box-shadow: 0 16px 40px var(--theme-shadow);
+}
+.activity-heatmap-body { display: flex; align-items: flex-start; gap: 10px; }
+.activity-day-labels {
+  display: grid;
+  grid-template-rows: repeat(7, 13px);
+  gap: 4px;
+  flex: 0 0 25px;
+  padding-top: 23px;
+  color: var(--theme-muted);
+  font-size: 9px;
+  line-height: 13px;
+}
+.activity-heatmap-scroll { flex: 1; min-width: 0; overflow-x: auto; padding: 0 1px 10px; scrollbar-color: var(--accent-main) var(--theme-elevated); }
+.activity-heatmap-track { width: max(100%, calc(var(--activity-weeks) * 17px)); min-width: calc(var(--activity-weeks) * 17px); }
+.activity-month-labels {
+  display: grid;
+  grid-template-columns: repeat(var(--activity-weeks), 13px);
+  gap: 4px;
+  height: 23px;
+  color: var(--theme-muted);
+  font-size: 9px;
+  text-transform: capitalize;
+}
+.activity-month-labels span { overflow: visible; white-space: nowrap; }
+.activity-heatmap-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 13px;
+  grid-template-rows: repeat(7, 13px);
+  gap: 4px;
+}
+.activity-cell {
+  width: 13px;
+  height: 13px;
+  border: 1px solid color-mix(in srgb, var(--theme-border) 75%, transparent);
+  border-radius: 3px;
+  background: var(--theme-elevated);
+  transition: transform .15s ease, border-color .15s ease, filter .15s ease;
+}
+.activity-cell.level-1 { background: rgba(255, 170, 0, .24); border-color: rgba(255, 170, 0, .18); }
+.activity-cell.level-2 { background: rgba(255, 170, 0, .46); border-color: rgba(255, 170, 0, .3); }
+.activity-cell.level-3 { background: rgba(255, 170, 0, .72); border-color: rgba(255, 170, 0, .5); }
+.activity-cell.level-4 { background: var(--accent-main); border-color: var(--accent-main); box-shadow: 0 0 8px rgba(255, 170, 0, .28); }
+.activity-cell:hover { z-index: 2; transform: scale(1.42); border-color: #fff; filter: brightness(1.12); }
+.activity-cell.is-future { opacity: .25; }
+.activity-heatmap-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 9px; color: var(--theme-muted); font-size: 9px; }
+.activity-heatmap-legend i { width: 11px; height: 11px; border-radius: 3px; background: var(--theme-elevated); }
+.activity-heatmap-legend .level-1 { background: rgba(255, 170, 0, .24); }
+.activity-heatmap-legend .level-2 { background: rgba(255, 170, 0, .46); }
+.activity-heatmap-legend .level-3 { background: rgba(255, 170, 0, .72); }
+.activity-heatmap-legend .level-4 { background: var(--accent-main); }
+
+@media (max-width: 850px) {
+  .monthly-comparison { align-items: stretch; flex-direction: column; gap: 15px; }
+  .monthly-comparison-values { flex-basis: auto; width: 100%; }
+  .activity-heatmap-heading { align-items: flex-start; flex-direction: column; }
+  .activity-heatmap-summary { justify-content: flex-start; }
+}
+@media (max-width: 560px) {
+  .monthly-comparison-values { grid-template-columns: 1fr; }
+  .monthly-comparison-values > div { grid-template-columns: 1fr auto; align-items: center; }
+  .activity-heatmap-card { padding: 15px 12px; }
+  .activity-heatmap-summary span { font-size: 10px; }
 }

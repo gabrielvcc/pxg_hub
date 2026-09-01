@@ -283,12 +283,30 @@
     <strong id="kpiNet">0</strong>
     <small id="kpiMargin">Margem de 0%</small>
   </article>
+  <article class="profit-kpi kpi-time">
+    <span>Total de horas</span>
+    <strong id="kpiTotalTime">0h</strong>
+    <small id="kpiSessions">0 atividades registradas</small>
+  </article>
   <article class="profit-kpi kpi-hour">
     <span>Lucro por hora</span>
     <strong id="kpiPerHour">0</strong>
-    <small id="kpiSessions">0 atividades registradas</small>
+    <small>Média ponderada do período</small>
   </article>
 </div>
+
+<section class="monthly-comparison" id="monthlyComparison">
+  <div>
+    <span class="monthly-comparison-eyebrow">Ritmo mensal</span>
+    <h3 id="monthlyComparisonTitle">Comparando períodos equivalentes</h3>
+    <p id="monthlyComparisonDescription">Do dia 1 até hoje contra os mesmos dias do mês anterior.</p>
+  </div>
+  <div class="monthly-comparison-values">
+    <div><span id="monthlyComparisonCurrentLabel">Período atual</span><strong id="monthlyComparisonCurrent">—</strong></div>
+    <div><span id="monthlyComparisonPreviousLabel">Período anterior</span><strong id="monthlyComparisonPrevious">—</strong></div>
+    <div class="monthly-comparison-delta"><span>Variação</span><strong id="monthlyComparisonDelta">—</strong></div>
+  </div>
+</section>
 
 <section class="pricing-report">
   <button id="pricingReportToggle" class="pricing-report-header" type="button">
@@ -323,6 +341,35 @@
     </div>
   </div>
 </div>
+
+<section class="activity-heatmap-section dashboard-section">
+  <div class="dashboard-section-heading activity-heatmap-heading">
+    <div>
+      <span>Consistência</span>
+      <h2>Mosaico de atividades</h2>
+      <small id="activityHeatmapRange">Histórico de dias com profits registrados</small>
+    </div>
+    <div class="activity-heatmap-summary">
+      <span><strong id="activityActiveDays">0</strong> dias ativos</span>
+      <span><strong id="activityCurrentStreak">0</strong> sequência atual</span>
+      <span><strong id="activityTotalRecords">0</strong> atividades</span>
+    </div>
+  </div>
+  <div class="activity-heatmap-card">
+    <div class="activity-heatmap-body">
+      <div class="activity-day-labels" aria-hidden="true">
+        <span>Seg</span><span></span><span>Qua</span><span></span><span>Sex</span><span></span><span>Dom</span>
+      </div>
+      <div id="activityHeatmapScroll" class="activity-heatmap-scroll">
+        <div id="activityHeatmapTrack" class="activity-heatmap-track">
+          <div id="activityMonthLabels" class="activity-month-labels"></div>
+          <div id="activityHeatmapGrid" class="activity-heatmap-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="activity-heatmap-legend"><span>Menos</span><i></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><i class="level-4"></i><span>Mais</span></div>
+  </div>
+</section>
 
 <div id="tableView" class="profit-view dashboard-section spreadsheet-section">
   <div class="spreadsheet-card">
@@ -376,6 +423,7 @@
     </div>
   </div>
 </div>
+
     </section>
 
     <!-- PRESETS DE PROFIT -->

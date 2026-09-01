@@ -1573,9 +1573,11 @@ function renderDashboard() {
 
   renderMonthlyDropHighlight(dateFilter);
   renderKpis(filteredProfits);
+  renderMonthlyComparison(dateFilter, contentFilter);
   renderCharts(totals);
   renderTrendChart(filteredProfits, dateFilter);
   renderTable();
+  renderActivityHeatmap(contentFilter);
 }
 
 function renderMonthlyDropHighlight(dateFilter = "all") {
@@ -1669,12 +1671,158 @@ function renderKpis(data) {
   document.getElementById("kpiGains").textContent = formatMoney(summary.gains);
   document.getElementById("kpiCosts").textContent = formatMoney(summary.costs);
   document.getElementById("kpiNet").textContent = formatMoney(summary.net);
+  document.getElementById("kpiTotalTime").textContent = formatTotalHours(summary.minutes);
   document.getElementById("kpiPerHour").textContent = formatMoney(perHour);
   document.getElementById("kpiMargin").textContent = `Margem de ${formatDecimal(margin)}%`;
   document.getElementById("kpiSessions").textContent = `${data.length} ${data.length === 1 ? "atividade registrada" : "atividades registradas"}`;
 
   document.querySelector(".kpi-net")?.classList.toggle("is-negative", summary.net < 0);
   document.querySelector(".kpi-hour")?.classList.toggle("is-negative", perHour < 0);
+}
+
+function formatTotalHours(minutes = 0) {
+  const totalMinutes = Math.max(0, Math.round(Number(minutes || 0)));
+  const hours = Math.floor(totalMinutes / 60);
+  const remainingMinutes = totalMinutes % 60;
+  return remainingMinutes ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
+}
+
+function renderMonthlyComparison(dateFilter = "month", contentFilter = "all") {
+  const container = document.getElementById("monthlyComparison");
+  if (!container) return;
+  const now = new Date();
+  let targetYear = now.getFullYear();
+  let targetMonth = now.getMonth();
+  if (dateFilter.startsWith("month:")) {
+    const [year, month] = dateFilter.slice(6).split("-").map(Number);
+    if (Number.isInteger(year) && Number.isInteger(month)) {
+      targetYear = year;
+      targetMonth = month - 1;
+    }
+  }
+  const isCurrentMonth = targetYear === now.getFullYear() && targetMonth === now.getMonth();
+  const targetEndDay = isCurrentMonth ? now.getDate() : new Date(targetYear, targetMonth + 1, 0).getDate();
+  const previousMonthDate = new Date(targetYear, targetMonth - 1, 1);
+  const previousLastDay = new Date(previousMonthDate.getFullYear(), previousMonthDate.getMonth() + 1, 0).getDate();
+  const previousEndDay = isCurrentMonth ? Math.min(targetEndDay, previousLastDay) : previousLastDay;
+  const comparisonData = profits.filter(profit => matchesContentFilter(profit.type, contentFilter));
+  const sumNetForPeriod = (year, month, endDay) => comparisonData.reduce((total, profit) => {
+    const date = getProfitDate(profit);
+    if (!date || date.getFullYear() !== year || date.getMonth() !== month || date.getDate() > endDay) return total;
+    return total + Number(profit.netProfit || 0);
+  }, 0);
+  const currentValue = sumNetForPeriod(targetYear, targetMonth, targetEndDay);
+  const previousValue = sumNetForPeriod(previousMonthDate.getFullYear(), previousMonthDate.getMonth(), previousEndDay);
+  const currentMonthName = capitalizeMonth(new Date(targetYear, targetMonth, 1));
+  const previousMonthName = capitalizeMonth(previousMonthDate);
+  const deltaElement = document.getElementById("monthlyComparisonDelta");
+  document.getElementById("monthlyComparisonTitle").textContent = isCurrentMonth ? `Ritmo de ${currentMonthName}` : `Resultado fechado de ${currentMonthName}`;
+  document.getElementById("monthlyComparisonDescription").textContent = isCurrentMonth
+    ? `Comparação justa: do dia 1 até hoje contra os mesmos dias de ${previousMonthName}.`
+    : `Mês completo comparado com o resultado completo de ${previousMonthName}.`;
+  document.getElementById("monthlyComparisonCurrentLabel").textContent = `${currentMonthName} · dias 1–${targetEndDay}`;
+  document.getElementById("monthlyComparisonPreviousLabel").textContent = `${previousMonthName} · dias 1–${previousEndDay}`;
+  document.getElementById("monthlyComparisonCurrent").textContent = formatMoney(currentValue);
+  document.getElementById("monthlyComparisonPrevious").textContent = formatMoney(previousValue);
+  let deltaText = "0%";
+  let deltaValue = 0;
+  if (previousValue !== 0) {
+    deltaValue = ((currentValue - previousValue) / Math.abs(previousValue)) * 100;
+    deltaText = `${deltaValue > 0 ? "+" : ""}${formatDecimal(deltaValue)}%`;
+  } else if (currentValue !== 0) {
+    deltaValue = currentValue > 0 ? 1 : -1;
+    deltaText = "Novo período";
+  }
+  deltaElement.textContent = deltaText;
+  container.classList.toggle("is-positive", deltaValue > 0);
+  container.classList.toggle("is-negative", deltaValue < 0);
+}
+
+function capitalizeMonth(date) {
+  const label = date.toLocaleDateString("pt-BR", { month: "long" });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function renderActivityHeatmap(contentFilter = "all") {
+  const grid = document.getElementById("activityHeatmapGrid");
+  const monthLabels = document.getElementById("activityMonthLabels");
+  const track = document.getElementById("activityHeatmapTrack");
+  if (!grid || !monthLabels || !track) return;
+  const today = normalizeCalendarDate(new Date());
+  const entries = profits.filter(profit => matchesContentFilter(profit.type, contentFilter))
+    .map(profit => ({ date: getProfitDate(profit) }))
+    .filter(entry => entry.date && normalizeCalendarDate(entry.date) <= today);
+  const dailyCounts = new Map();
+  entries.forEach(({ date }) => {
+    const key = getCalendarDateKey(date);
+    dailyCounts.set(key, (dailyCounts.get(key) || 0) + 1);
+  });
+  const earliestDate = entries.length
+    ? normalizeCalendarDate(new Date(Math.min(...entries.map(entry => entry.date.getTime()))))
+    : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 83);
+  const start = getMonday(earliestDate);
+  const end = new Date(getMonday(today));
+  end.setDate(end.getDate() + 6);
+  const weekCount = Math.max(1, Math.round(((end - start) / 86400000 + 1) / 7));
+  const maxCount = Math.max(1, ...dailyCounts.values());
+  const cells = [];
+  const labels = [];
+  let lastMonthKey = "";
+  for (let week = 0; week < weekCount; week += 1) {
+    const weekDate = new Date(start);
+    weekDate.setDate(start.getDate() + week * 7 + 3);
+    const monthKey = `${weekDate.getFullYear()}-${weekDate.getMonth()}`;
+    labels.push(`<span>${monthKey !== lastMonthKey ? escapeHtml(weekDate.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")) : ""}</span>`);
+    lastMonthKey = monthKey;
+    for (let day = 0; day < 7; day += 1) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + week * 7 + day);
+      const count = dailyCounts.get(getCalendarDateKey(date)) || 0;
+      const level = count ? Math.max(1, Math.ceil((count / maxCount) * 4)) : 0;
+      const isFuture = date > today;
+      const dateLabel = date.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+      const activityLabel = count === 1 ? "1 atividade" : `${count} atividades`;
+      cells.push(`<span class="activity-cell level-${level}${isFuture ? " is-future" : ""}" title="${escapeHtml(dateLabel)}: ${activityLabel}" aria-label="${escapeHtml(dateLabel)}: ${activityLabel}"></span>`);
+    }
+  }
+  track.style.setProperty("--activity-weeks", weekCount);
+  monthLabels.innerHTML = labels.join("");
+  grid.innerHTML = cells.join("");
+  document.getElementById("activityActiveDays").textContent = dailyCounts.size;
+  document.getElementById("activityTotalRecords").textContent = entries.length;
+  document.getElementById("activityCurrentStreak").textContent = calculateActivityStreak(dailyCounts, today);
+  document.getElementById("activityHeatmapRange").textContent = entries.length
+    ? `${earliestDate.toLocaleDateString("pt-BR")} — ${today.toLocaleDateString("pt-BR")}`
+    : "O mosaico será preenchido quando você registrar uma atividade";
+  requestAnimationFrame(() => {
+    const scroll = document.getElementById("activityHeatmapScroll");
+    if (scroll) scroll.scrollLeft = scroll.scrollWidth;
+  });
+}
+
+function normalizeCalendarDate(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function getCalendarDateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getMonday(date) {
+  const result = normalizeCalendarDate(date);
+  result.setDate(result.getDate() - ((result.getDay() + 6) % 7));
+  return result;
+}
+
+function calculateActivityStreak(dailyCounts, today) {
+  const cursor = new Date(today);
+  if (!dailyCounts.has(getCalendarDateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  let streak = 0;
+  while (dailyCounts.has(getCalendarDateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
 }
 
 function renderTrendChart(data, dateFilter) {
