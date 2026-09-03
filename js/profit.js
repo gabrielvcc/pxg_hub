@@ -1580,6 +1580,10 @@ function renderDashboard() {
   renderActivityHeatmap(contentFilter);
 }
 
+const EXTRAORDINARY_DROP_MIN_UNIT_VALUE = 5_000_000;
+const EXTRAORDINARY_DROP_MIN_HISTORY_SIZE = 10;
+const EXTRAORDINARY_DROP_MAX_OCCURRENCE_RATE = 0.2;
+
 function renderMonthlyDropHighlight(dateFilter = "all") {
   const card = document.getElementById("monthlyDropHighlight");
   if (!card) return;
@@ -1594,19 +1598,34 @@ function renderMonthlyDropHighlight(dateFilter = "all") {
     return getMonthKey(date) === getMonthKey(now);
   });
 
+  const lootHistory = profits.filter(profit => Object.keys(profit.loot || {}).length > 0);
+  const itemOccurrences = new Map();
+  lootHistory.forEach(profit => {
+    const uniqueItems = new Set(Object.keys(profit.loot || {}).map(name => name.trim().toLowerCase()));
+    uniqueItems.forEach(name => itemOccurrences.set(name, (itemOccurrences.get(name) || 0) + 1));
+  });
+
   const candidates = data.flatMap(profit => Object.entries(profit.loot || {}).map(([name, quantity]) => {
     const gains = profit.prices?.gains || {};
     const priceKey = findItemKey(gains, name);
     const unitPrice = Number(priceKey ? gains[priceKey] : 0);
+    const occurrenceRate = lootHistory.length
+      ? (itemOccurrences.get(name.trim().toLowerCase()) || 0) / lootHistory.length
+      : 0;
     return {
       name,
       quantity: Number(quantity || 0),
       unitPrice,
       totalValue: unitPrice * Number(quantity || 0),
+      occurrenceRate,
       type: profit.type || "",
       date: getProfitDate(profit)
     };
-  })).filter(item => item.quantity > 0 && item.unitPrice > 0);
+  })).filter(item => {
+    if (item.quantity <= 0 || item.unitPrice < EXTRAORDINARY_DROP_MIN_UNIT_VALUE) return false;
+    return lootHistory.length < EXTRAORDINARY_DROP_MIN_HISTORY_SIZE
+      || item.occurrenceRate <= EXTRAORDINARY_DROP_MAX_OCCURRENCE_RATE;
+  });
 
   const image = document.getElementById("monthlyDropImage");
   const fallback = document.getElementById("monthlyDropImageFallback");
@@ -1614,8 +1633,8 @@ function renderMonthlyDropHighlight(dateFilter = "all") {
 
   if (!candidates.length) {
     card.classList.add("is-empty");
-    document.getElementById("monthlyDropName").textContent = "Nenhum drop precificado neste período";
-    document.getElementById("monthlyDropContext").textContent = "Assim que houver loot com valor histórico, o maior destaque aparecerá aqui.";
+    document.getElementById("monthlyDropName").textContent = "Nenhum drop raro neste período";
+    document.getElementById("monthlyDropContext").textContent = "O destaque só aparece quando houver um drop realmente raro e de alto valor.";
     document.getElementById("monthlyDropValue").textContent = "—";
     document.getElementById("monthlyDropQuantity").textContent = "—";
     image?.classList.add("hidden");
