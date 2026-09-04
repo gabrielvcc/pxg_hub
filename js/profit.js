@@ -388,7 +388,9 @@ function createDropdownOptions(container, filter = "", typeFilter = null) {
   container.innerHTML = matches.length
     ? matches.map(item => `
       <button class="item-option" type="button" data-item-key="${escapeHtml(item.key)}">
-        ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy" decoding="async">` : ""}
+        <span class="item-option-image">
+          ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy" decoding="async">` : ""}
+        </span>
         <span>${escapeHtml(item.name)}</span>
       </button>
     `).join("")
@@ -1155,6 +1157,9 @@ function setupProfitPresetUI() {
     if (event.target.id === "profitPresetModal") closeProfitPresetModal();
   });
   document.getElementById("profitPresetForm")?.addEventListener("submit", saveProfitPreset);
+  document.getElementById("addProfitPresetCostBtn")?.addEventListener("click", () => {
+    createItemRow(document.getElementById("profitPresetCosts"), "supply");
+  });
   document.getElementById("deleteProfitPresetBtn")?.addEventListener("click", deleteProfitPreset);
   document.getElementById("profitPresetGrid")?.addEventListener("click", event => {
     const card = event.target.closest("[data-preset-admin-id]");
@@ -1224,7 +1229,14 @@ function openProfitPresetModal(presetId = null) {
   document.getElementById("profitPresetImage").value = preset?.image || "";
   document.getElementById("profitPresetHours").value = Math.floor(Number(preset?.timeMinutes || 0) / 60);
   document.getElementById("profitPresetMinutes").value = Number(preset?.timeMinutes || 0) % 60;
-  document.getElementById("profitPresetCosts").value = Object.entries(preset?.costs || {}).map(([name, quantity]) => `${name}: ${quantity}`).join("\n");
+  const costsContainer = document.getElementById("profitPresetCosts");
+  costsContainer.replaceChildren();
+  const costs = Object.entries(preset?.costs || {});
+  if (costs.length) {
+    costs.forEach(([name, quantity]) => createItemRow(costsContainer, "supply", { name, quantity }));
+  } else {
+    createItemRow(costsContainer, "supply");
+  }
   document.getElementById("profitPresetActive").checked = preset?.active !== false;
   document.getElementById("profitPresetModalTitle").textContent = preset?.name || "Novo preset";
   document.getElementById("deleteProfitPresetBtn").classList.toggle("hidden", !preset);
@@ -1235,16 +1247,26 @@ function closeProfitPresetModal() {
   document.getElementById("profitPresetModal")?.classList.add("hidden");
 }
 
-function parsePresetCosts(text) {
-  return text.split(/\r?\n/).reduce((costs, line) => {
-    const separator = line.lastIndexOf(":");
-    if (separator < 1) return costs;
-    const name = line.slice(0, separator).trim();
-    const quantity = Number(line.slice(separator + 1).trim().replace(",", "."));
-    const canonicalName = catalogPrices[name.toLowerCase()]?.name || name;
-    if (canonicalName && quantity > 0) costs[canonicalName] = quantity;
-    return costs;
-  }, {});
+function collectPresetCosts() {
+  const costs = {};
+  const rows = document.querySelectorAll("#profitPresetCosts .item-row");
+  for (const row of rows) {
+    const input = row.querySelector(".item-search");
+    const typedName = input.value.trim();
+    const selectedName = input.dataset.selected;
+    const quantity = Number(row.querySelector(".item-qty").value);
+    if (!typedName && !quantity) continue;
+    if (!selectedName) {
+      input.focus();
+      throw new Error(`Selecione "${typedName || "o supply"}" na lista do catálogo.`);
+    }
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      row.querySelector(".item-qty").focus();
+      throw new Error(`Informe uma quantidade válida para ${selectedName}.`);
+    }
+    costs[selectedName] = (costs[selectedName] || 0) + quantity;
+  }
+  return costs;
 }
 
 async function saveProfitPreset(event) {
@@ -1257,6 +1279,13 @@ async function saveProfitPreset(event) {
   const minutes = Number(document.getElementById("profitPresetMinutes").value || 0);
   const presetId = currentId || getProfitPresetId(type, name);
   const button = document.getElementById("saveProfitPresetBtn");
+  let costs;
+  try {
+    costs = collectPresetCosts();
+  } catch (error) {
+    showToast(error.message);
+    return;
+  }
   button.disabled = true;
   try {
     await setDoc(doc(db, "profitPresets", presetId), {
@@ -1264,7 +1293,7 @@ async function saveProfitPreset(event) {
       type,
       image: document.getElementById("profitPresetImage").value.trim(),
       timeMinutes: hours * 60 + minutes,
-      costs: parsePresetCosts(document.getElementById("profitPresetCosts").value),
+      costs,
       active: document.getElementById("profitPresetActive").checked,
       updatedAt: serverTimestamp(),
       ...(currentId ? {} : { createdAt: serverTimestamp() })

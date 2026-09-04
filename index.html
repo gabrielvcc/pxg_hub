@@ -494,11 +494,12 @@
                 <span>Minutos</span>
                 <input id="profitPresetMinutes" type="number" min="0" max="59" value="0">
               </label>
-              <label class="catalog-field catalog-field-wide">
-                <span>Supplies — um por linha no formato Item: quantidade</span>
-                <textarea id="profitPresetCosts" placeholder="Rindo Berry: 1&#10;Ganlon Berry: 1"></textarea>
-                <small>Use exatamente o nome existente no Catálogo de Itens.</small>
-              </label>
+              <div class="catalog-field catalog-field-wide preset-costs-field">
+                <span>Supplies do preset</span>
+                <div id="profitPresetCosts" class="profit-items-list preset-costs-list"></div>
+                <button id="addProfitPresetCostBtn" class="add-item-btn" type="button">+ Adicionar supply</button>
+                <small>Busque o item no catálogo e informe a quantidade usada.</small>
+              </div>
               <label class="preset-active-field">
                 <input id="profitPresetActive" type="checkbox" checked>
                 <span>Disponível na tela de lançamento</span>
