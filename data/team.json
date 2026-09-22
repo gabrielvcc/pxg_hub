@@ -60,6 +60,18 @@
     "priority": 1
   },
   {
+    "name": "Shiny Venomoth",
+    "image": "https://wiki.pokexgames.com/images/5/55/Sh_moth.png",
+    "boost": "+80",
+    "heldX": "attack_t8",
+    "heldY": "ghost_t4",
+    "inactives": ["bug-type_tm_otdd"],
+    "pokeball": "premier_ball",
+    "gradient": "blue",
+    "types": ["bug", "poison"],
+    "priority": 1
+  },
+  {
     "name": "Shiny Gogoat",
     "image": "https://wiki.pokexgames.com/images/5/57/673-Shiny_Gogoat.png",
     "boost": "+70",

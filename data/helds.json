@@ -64,6 +64,11 @@
     "image": "https://wiki.pokexgames.com/images/4/4d/Bug-Type_TR_Collection_%28Scyther%29.png",
     "description": "Este item altera o moveset para Burst Damage Dealer (BDD) do Scyther."
   },
+  "bug-type_tm_otdd": {
+    "name": "Bug-Type TM Collection (Shiny Venomoth)",
+    "image": "https://wiki.pokexgames.com/images/f/f6/Bug-Type_TM_Collection_Shiny_Venomoth.png",
+    "description": "Este item altera o moveset para Over Time Damage Dealer (OTDD) da Shiny Venomoth."
+  },
   "poison_t7": {
     "name": "Poison T7",
     "image": "/assets/helds/Poison_T7.png",

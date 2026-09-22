@@ -184,9 +184,19 @@
                 <div><h3>Ganhos</h3><small>Loot recebido na atividade</small></div>
               </div>
 
-              <textarea id="lootInput" placeholder="Cole aqui o texto do loot recebido..."></textarea>
+              <div id="lootImportBox" class="loot-import-box">
+                <textarea id="lootInput" placeholder="Cole uma mensagem de loot ou o JSON completo do Analytics..."></textarea>
+                <div class="loot-import-actions">
+                  <small>Texto comum soma o loot. JSON preenche loot, supplies e duração. Atalho: Ctrl + Enter.</small>
+                  <button id="processLootBtn" type="button">Processar dados</button>
+                </div>
+              </div>
 
               <div id="manualForm" class="hidden">
+                <div class="loot-review-heading">
+                  <span>Itens do loot</span>
+                  <small>Confira e edite antes de salvar.</small>
+                </div>
                 <div id="itemsContainer" class="profit-items-list"></div>
                 <button id="addItemBtn" class="add-item-btn" type="button">+ Adicionar Item</button>
               </div>

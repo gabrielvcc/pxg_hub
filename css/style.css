@@ -2822,6 +2822,38 @@ body::before {
   line-height: 1.5;
 }
 
+.loot-import-box { display: grid; gap: 9px; }
+.loot-import-box.hidden { display: none; }
+.loot-import-box textarea { min-height: 125px; }
+.loot-import-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.loot-import-actions small { color: var(--theme-muted); font-size: 9px; line-height: 1.4; }
+.loot-import-actions button {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent-main) 65%, var(--theme-border));
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--accent-main) 14%, var(--theme-input));
+  color: var(--accent-main);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.loot-import-actions button:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent-main) 22%, var(--theme-input));
+  box-shadow: 0 8px 20px rgba(255, 170, 0, .13);
+}
+#manualForm:not(.hidden) { display: grid; gap: 10px; margin-top: 15px; }
+.loot-review-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.loot-review-heading span { color: var(--theme-text); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.loot-review-heading small { color: var(--theme-muted); font-size: 9px; }
+
 .profit-items-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 11px; }
 .profit-items-list:empty { margin-bottom: 0; }
 .profit-modal-content .item-row {
@@ -2885,6 +2917,8 @@ body::before {
   .profit-type-field { padding: 15px 15px 0; }
   .profit-modal-header { padding: 18px 15px 14px; }
   .profit-modal-footer { padding: 12px 15px; }
+  .loot-import-actions { align-items: stretch; flex-direction: column; }
+  .loot-import-actions button { width: 100%; }
 }
 
 @media (max-width: 480px) {

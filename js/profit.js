@@ -30,6 +30,7 @@ let catalogInitializationPromise = null;
 let profitPresets = [];
 let unsubscribeProfitPresets = null;
 let selectedProfitPresetId = null;
+let processedLootMessages = [];
 
 const PROFIT_PRESET_SEED = [
   ["md_red", "Alpha Hisuian Arcanine", "https://wiki.pokexgames.com/images/d/d0/Banner_Bolinha_MD_-_Alpha_Hisuian_Arcanine.webp"],
@@ -138,12 +139,14 @@ function setupUI() {
   const closeBtn = document.getElementById("closeProfitModal");
   const entryType = document.getElementById("entryType");
   const textarea = document.getElementById("lootInput");
+  const lootImportBox = document.getElementById("lootImportBox");
   const manualForm = document.getElementById("manualForm");
 
   const itemsContainer = document.getElementById("itemsContainer");
   const costContainer = document.getElementById("costContainer");
 
   const addItemBtn = document.getElementById("addItemBtn");
+  const processLootBtn = document.getElementById("processLootBtn");
   const addCostBtn = document.getElementById("addCostBtn");
 
   openBtn.onclick = () => {
@@ -167,15 +170,20 @@ function setupUI() {
   entryType.onchange = () => {
     selectedProfitPresetId = null;
     renderProfitPresetChoices(entryType.value);
+    lootImportBox.classList.remove("hidden");
+    manualForm.classList.remove("hidden");
     if (entryType.value === "hunt") {
-      textarea.classList.add("hidden");
-      manualForm.classList.remove("hidden");
       if (!itemsContainer.querySelector(".item-row")) createItemRow(itemsContainer, "loot");
-    } else {
-      textarea.classList.remove("hidden");
-      manualForm.classList.add("hidden");
     }
   };
+
+  processLootBtn.onclick = processLootText;
+  textarea.addEventListener("keydown", event => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      processLootText();
+    }
+  });
 
   // GANHOS
   addItemBtn.onclick = () => {
@@ -252,6 +260,132 @@ function createItemRow(container, type, initialItem = null) {
   }
 }
 
+function processLootText() {
+  const textarea = document.getElementById("lootInput");
+  const rawText = textarea.value.trim();
+  if (!rawText) {
+    showToast("Cole uma mensagem de loot para processar");
+    textarea.focus();
+    return;
+  }
+
+  if (looksLikeAnalyticsJson(rawText)) {
+    try {
+      importAnalyticsJson(JSON.parse(rawText));
+      textarea.value = "";
+      textarea.focus();
+    } catch (error) {
+      console.error("Erro ao processar JSON do Analytics:", error);
+      showToast(error instanceof SyntaxError ? "O JSON copiado está incompleto ou inválido" : error.message);
+      textarea.focus();
+    }
+    return;
+  }
+
+  if (rawText.includes("\t") && /(?:^|\n)(?:Sessão|Saques|Suprimentos)(?:\r?$|\t)/im.test(rawText)) {
+    showToast("Este é o formato TSV. No Analytics, use a opção Copiar JSON.");
+    return;
+  }
+
+  const parsedLoot = parseLoot(rawText);
+  const entries = Object.entries(parsedLoot).filter(([name, quantity]) => name.trim() && Number(quantity) > 0);
+  if (!entries.length) {
+    showToast("Não encontrei itens nessa mensagem");
+    textarea.focus();
+    return;
+  }
+
+  mergeLootIntoRows(entries);
+  processedLootMessages.push(rawText);
+  textarea.value = "";
+  textarea.focus();
+  showToast(`${entries.length} ${entries.length === 1 ? "item processado" : "itens processados"}`);
+}
+
+function looksLikeAnalyticsJson(text) {
+  return text.trimStart().startsWith("{");
+}
+
+function importAnalyticsJson(data) {
+  if (!data || !Array.isArray(data.Drops) || !Array.isArray(data.Supplies) || !data.Session) {
+    throw new Error("JSON não reconhecido. Copie o JSON completo do Analytics.");
+  }
+
+  const loot = aggregateAnalyticsItems(data.Drops);
+  const supplies = aggregateAnalyticsItems(data.Supplies);
+  if (!Object.keys(loot).length) throw new Error("O JSON não contém itens de loot válidos.");
+
+  replaceItemRows(document.getElementById("itemsContainer"), "loot", loot);
+  replaceItemRows(document.getElementById("costContainer"), "supply", supplies);
+
+  const totalMinutes = getAnalyticsDurationMinutes(data.Session);
+  if (totalMinutes > 0) {
+    document.getElementById("hoursInput").value = Math.floor(totalMinutes / 60);
+    document.getElementById("minutesInput").value = totalMinutes % 60;
+  }
+
+  const sessionId = data.Session["Session ID"] ?? "sem-id";
+  processedLootMessages = [`analytics_json:${sessionId}`];
+  const lootCount = Object.keys(loot).length;
+  const supplyCount = Object.keys(supplies).length;
+  const durationLabel = totalMinutes > 0 ? ` e ${formatDuration(totalMinutes)}` : "";
+  showToast(`${lootCount} loots, ${supplyCount} supplies${durationLabel} importados`);
+}
+
+function aggregateAnalyticsItems(items) {
+  return items.reduce((result, entry) => {
+    if (entry?.Ignored === true) return result;
+    const originalName = String(entry?.Item || "").trim();
+    const quantity = Number(entry?.Count);
+    if (!originalName || !Number.isFinite(quantity) || quantity <= 0) return result;
+    const name = catalogPrices[originalName.toLowerCase()]?.name || originalName;
+    result[name] = (result[name] || 0) + quantity;
+    return result;
+  }, {});
+}
+
+function replaceItemRows(container, type, items) {
+  container.replaceChildren();
+  Object.entries(items).forEach(([name, quantity]) => {
+    createItemRow(container, type, { name, quantity });
+  });
+}
+
+function getAnalyticsDurationMinutes(session) {
+  const durationSeconds = Number(session?.["Duration seconds"]);
+  if (Number.isFinite(durationSeconds) && durationSeconds > 0) return Math.round(durationSeconds / 60);
+
+  const durationMatch = String(session?.Duration || "").match(/^(\d+):(\d{2}):(\d{2})$/);
+  if (!durationMatch) return 0;
+  const [, hours, minutes, seconds] = durationMatch.map(Number);
+  return Math.round((hours * 3600 + minutes * 60 + seconds) / 60);
+}
+
+function mergeLootIntoRows(entries) {
+  const container = document.getElementById("itemsContainer");
+  const rows = [...container.querySelectorAll(".item-row")];
+
+  entries.forEach(([parsedName, parsedQuantity]) => {
+    const catalogItem = catalogPrices[parsedName.toLowerCase()];
+    const itemName = catalogItem?.name || parsedName;
+    const normalizedName = itemName.trim().toLocaleLowerCase("pt-BR");
+    const existingRow = rows.find(row => {
+      const input = row.querySelector(".item-search");
+      const currentName = (input.dataset.selected || input.value).trim().toLocaleLowerCase("pt-BR");
+      return currentName === normalizedName;
+    });
+
+    if (existingRow) {
+      const quantityInput = existingRow.querySelector(".item-qty");
+      quantityInput.value = (Number(quantityInput.value) || 0) + Number(parsedQuantity);
+      return;
+    }
+
+    createItemRow(container, "loot", { name: itemName, quantity: Number(parsedQuantity) });
+    rows.push(container.lastElementChild);
+  });
+}
+
 // ================= SAVE =================
 function setupSave() {
   const saveBtn = document.getElementById("saveBtn");
@@ -269,26 +403,21 @@ function setupSave() {
 
     let parsedLoot = {};
     let parsedCosts = {};
-    let rawText = "";
+    let rawText = processedLootMessages.length ? processedLootMessages.join("\n") : "manual_entry";
 
     // GANHOS
-    if (type === "hunt") {
-      document.querySelectorAll("#itemsContainer .item-row").forEach(row => {
-        const input = row.querySelector(".item-search");
-        const name = input.dataset.selected || input.value;
-        const qty = parseInt(row.querySelector(".item-qty").value);
-
-        if (name && qty) parsedLoot[name] = qty;
-      });
-
-      rawText = "manual_entry";
-
-    } else {
-      rawText = textarea.value.trim();
-      if (!rawText) return alert("Cole o loot");
-
-      parsedLoot = parseLoot(rawText);
+    if (textarea.value.trim()) {
+      alert("Ainda existem dados não processados. Clique em Processar dados antes de salvar.");
+      textarea.focus();
+      return;
     }
+    document.querySelectorAll("#itemsContainer .item-row").forEach(row => {
+      const input = row.querySelector(".item-search");
+      const name = (input.dataset.selected || input.value).trim();
+      const qty = Number(row.querySelector(".item-qty").value);
+      if (name && qty > 0) parsedLoot[name] = (parsedLoot[name] || 0) + qty;
+    });
+    if (!Object.keys(parsedLoot).length) return alert("Adicione ou processe pelo menos um item de loot");
 
     // GASTOS
     document.querySelectorAll("#costContainer .item-row").forEach(row => {
@@ -363,8 +492,9 @@ const profitPerHour = (netProfit / totalMinutes) * 60;
       document.getElementById("minutesInput").value = "";
       entryType.value = "";
       selectedProfitPresetId = null;
+      processedLootMessages = [];
       renderProfitPresetChoices("");
-      textarea.classList.remove("hidden");
+      document.getElementById("lootImportBox").classList.remove("hidden");
       document.getElementById("manualForm").classList.add("hidden");
 
     } catch (err) {
@@ -421,7 +551,8 @@ function selectDropdownItem(container, itemKey) {
 // ================= CALC =================
 function parseLoot(text) {
   const clean = text
-    .replace(/^\d{2}:\d{2}\sVocê recebeu:\s?/i, "")
+    .replace(/(^|\r?\n)\s*(?:\d{2}:\d{2}\s*)?Você recebeu:\s*/gi, "$1")
+    .replace(/\r?\n+/g, ", ")
     .trim();
 
   const parts = clean.split(/,\s*|\s+e\s+/);
@@ -441,16 +572,26 @@ function parseLoot(text) {
       name = match[2];
     }
 
-    name = name
-      .replace(/s$/i, "")
-      .replace(/stones$/i, "stone")
-      .replace(/shards$/i, "shard")
-      .replace(/gems$/i, "gem");
+    name = normalizeParsedLootName(name);
 
     loot[name] = (loot[name] || 0) + qty;
   });
 
   return loot;
+}
+
+function normalizeParsedLootName(name) {
+  const trimmedName = name.trim();
+  const exactItem = catalogPrices[trimmedName.toLowerCase()];
+  if (exactItem) return exactItem.name;
+
+  const singularName = trimmedName
+    .replace(/berries$/i, "berry")
+    .replace(/stones$/i, "stone")
+    .replace(/shards$/i, "shard")
+    .replace(/gems$/i, "gem")
+    .replace(/s$/i, "");
+  return catalogPrices[singularName.toLowerCase()]?.name || singularName;
 }
 
 function calculateTotal(data, mode) {

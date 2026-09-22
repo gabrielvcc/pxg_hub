@@ -46,5 +46,13 @@
     "image": "https://wiki.pokexgames.com/images/b/be/409-Shiny_rampardos.png",
     "file": "/data/conquistas/caught_shrampardos.md",
     "gradient": "red"
+  },
+  {
+    "id": "tm_shiny_venomoth",
+    "title": "Done TM Shiny Venomoth PB",
+    "description": "TM OTDD Shiny Venomoth PB",
+    "image": "https://wiki.pokexgames.com/images/0/03/049-Sh_Venomoth.png",
+    "file": "/data/conquistas/tm_shiny_venomoth.md",
+    "gradient": "blue"
   }
 ]
