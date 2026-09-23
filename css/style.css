@@ -1164,6 +1164,18 @@ body {
   image-rendering: pixelated;
 }
 
+.md-icon-text-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 28px;
+}
+
+.md-icon-text-line img {
+  width: 36px;
+  height: 36px;
+}
+
 .log-text{
   background-color: #e9eef6;
   color: black;
