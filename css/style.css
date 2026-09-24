@@ -3571,3 +3571,235 @@ body::before {
   .activity-heatmap-card { padding: 15px 12px; }
   .activity-heatmap-summary span { font-size: 10px; }
 }
+
+/* Subnavegação de Profits */
+.profit-nav-group { margin-bottom: 8px; }
+.profit-nav-group > .nav-item { margin-bottom: 0; }
+.profit-nav-subnav {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: max-height .24s ease, opacity .2s ease, transform .2s ease;
+}
+.profit-nav-group.expanded .profit-nav-subnav { max-height: 54px; opacity: 1; transform: none; }
+.nav-subitem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 5px 7px 0 25px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 11px;
+}
+.nav-subitem span { color: var(--accent-main); font-size: 10px; }
+.nav-subitem.active {
+  border-color: rgba(255, 170, 0, .28);
+  background: rgba(255, 170, 0, .12);
+  color: var(--accent-main);
+  box-shadow: none;
+}
+.profit-nav-group.section-active .profit-nav-main { color: var(--theme-text); background: rgba(255, 170, 0, .06); }
+
+/* Museu de Drops Raros */
+#rareDrops { width: min(1200px, 100%); padding-bottom: 45px; }
+.rare-museum-hero {
+  position: relative;
+  display: flex;
+  min-height: 205px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  overflow: hidden;
+  padding: 32px 38px;
+  border: 1px solid color-mix(in srgb, var(--accent-main) 32%, var(--theme-border));
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 85% 45%, rgba(255, 170, 0, .22), transparent 24%),
+    radial-gradient(circle at 70% 0%, rgba(255, 77, 141, .12), transparent 31%),
+    linear-gradient(135deg, color-mix(in srgb, var(--theme-card) 94%, #ffaa00 6%), var(--theme-card));
+  box-shadow: 0 24px 60px var(--theme-shadow), inset 0 1px rgba(255, 255, 255, .04);
+}
+.rare-museum-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0 70%, rgba(255,255,255,.025));
+}
+.rare-museum-copy { position: relative; z-index: 1; max-width: 680px; }
+.rare-museum-eyebrow { color: var(--accent-main); font-size: 10px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
+#rareDrops .rare-museum-copy h1 { margin: 9px 0 10px; font-size: clamp(27px, 4vw, 42px); letter-spacing: -.04em; }
+.rare-museum-copy p { max-width: 610px; margin: 0; color: var(--theme-muted); font-size: 13px; line-height: 1.65; }
+.rare-museum-emblem {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: 0 0 112px;
+  width: 112px;
+  height: 112px;
+  place-items: center;
+  border: 1px solid rgba(255, 170, 0, .42);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 170, 0, .2), rgba(255, 170, 0, .035) 65%);
+  box-shadow: 0 0 0 9px rgba(255, 170, 0, .035), 0 0 42px rgba(255, 170, 0, .18);
+  color: var(--accent-main);
+  font-size: 44px;
+}
+.rare-museum-emblem::before,
+.rare-museum-emblem::after { content: ""; position: absolute; inset: 12px; border: 1px dashed rgba(255,170,0,.25); border-radius: 50%; }
+.rare-museum-emblem::after { inset: -18px; border-style: solid; opacity: .22; }
+
+.rare-museum-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin: 18px 0;
+}
+.rare-museum-summary article {
+  position: relative;
+  display: grid;
+  min-height: 103px;
+  align-content: center;
+  gap: 5px;
+  overflow: hidden;
+  padding: 17px 20px;
+  border: 1px solid var(--theme-border);
+  border-radius: 15px;
+  background: var(--theme-card);
+  box-shadow: 0 12px 30px var(--theme-shadow);
+}
+.rare-museum-summary article::after { content: ""; position: absolute; right: -28px; bottom: -45px; width: 100px; height: 100px; border: 1px solid rgba(255,170,0,.12); border-radius: 50%; }
+.rare-museum-summary span { color: var(--theme-muted); font-size: 9px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.rare-museum-summary strong { color: var(--theme-text); font-size: 21px; }
+.rare-museum-summary small { overflow: hidden; color: var(--theme-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+
+.rare-museum-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 210px 170px;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.rare-museum-toolbar input,
+.rare-museum-toolbar select {
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid var(--theme-border);
+  border-radius: 10px;
+  outline: 0;
+  background: var(--theme-input);
+  color: var(--theme-text);
+}
+.rare-museum-toolbar input:focus,
+.rare-museum-toolbar select:focus { border-color: var(--accent-main); box-shadow: 0 0 0 3px rgba(255,170,0,.1); }
+
+.rare-drop-featured {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 250px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent-main) 42%, var(--theme-border));
+  border-radius: 20px;
+  background: linear-gradient(120deg, rgba(255,170,0,.08), transparent 45%), var(--theme-card);
+  box-shadow: 0 20px 46px var(--theme-shadow), 0 0 28px rgba(255,170,0,.06);
+}
+.rare-drop-featured.has-screenshot { grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); }
+.rare-drop-featured-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 135px minmax(190px, 1fr) minmax(155px, auto);
+  align-items: center;
+  gap: 22px;
+  padding: 34px;
+}
+.rare-drop-crown { position: absolute; top: 17px; left: 21px; color: var(--accent-main); font-size: 9px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.rare-drop-item-visual {
+  display: grid;
+  width: 135px;
+  height: 135px;
+  place-items: center;
+  border: 1px solid rgba(255,170,0,.3);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,170,0,.16), transparent 67%);
+  box-shadow: 0 0 35px rgba(255,170,0,.12), inset 0 0 25px rgba(255,170,0,.05);
+}
+.rare-drop-item-visual img { width: auto; height: auto; max-width: 105px; max-height: 105px; object-fit: contain; filter: drop-shadow(0 12px 15px rgba(0,0,0,.25)); }
+.rare-drop-item-visual b { color: var(--accent-main); font-size: 43px; }
+.rare-drop-featured-copy > span { color: var(--accent-main); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.rare-drop-featured-copy h2 { margin: 7px 0; font-size: clamp(21px, 2.5vw, 31px); }
+.rare-drop-featured-copy p { margin: 0; color: var(--theme-muted); font-size: 11px; }
+.rare-drop-featured-value { display: grid; justify-items: end; gap: 4px; text-align: right; }
+.rare-drop-featured-value span { color: var(--theme-muted); font-size: 9px; text-transform: uppercase; }
+.rare-drop-featured-value strong { color: var(--accent-main); font-size: clamp(23px, 3vw, 34px); }
+.rare-drop-featured-value small { color: var(--theme-muted); font-size: 9px; }
+.rare-drop-featured-print,
+.rare-drop-card-print { position: relative; overflow: hidden; padding: 0; border: 0; background: #090b10; cursor: zoom-in; }
+.rare-drop-featured-print img { width: 100%; height: 100%; min-height: 250px; object-fit: cover; opacity: .78; transition: transform .3s ease, opacity .3s ease; }
+.rare-drop-featured-print span,
+.rare-drop-card-print span { position: absolute; right: 12px; bottom: 12px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: rgba(5,8,12,.7); color: #fff; font-size: 9px; backdrop-filter: blur(8px); }
+.rare-drop-featured-print:hover img,
+.rare-drop-card-print:hover img { transform: scale(1.025); opacity: .94; }
+
+.rare-drop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 14px; }
+.rare-drop-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  background: linear-gradient(145deg, var(--theme-card), color-mix(in srgb, var(--theme-card) 88%, var(--theme-bg)));
+  box-shadow: 0 14px 34px var(--theme-shadow);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.rare-drop-card:hover { transform: translateY(-3px); border-color: rgba(255,170,0,.4); box-shadow: 0 20px 42px var(--theme-shadow), 0 0 20px rgba(255,170,0,.07); }
+.rare-drop-card-print { display: block; width: 100%; height: 145px; }
+.rare-drop-card-print img { width: 100%; height: 100%; object-fit: cover; opacity: .8; transition: transform .3s ease, opacity .3s ease; }
+.rare-drop-card-top { display: grid; grid-template-columns: 72px 1fr; align-items: center; gap: 12px; padding: 17px 17px 11px; }
+.rare-drop-card-image { display: grid; width: 72px; height: 72px; place-items: center; border: 1px solid rgba(255,170,0,.2); border-radius: 14px; background: rgba(255,170,0,.055); }
+.rare-drop-card-image img { width: auto; height: auto; max-width: 58px; max-height: 58px; object-fit: contain; }
+.rare-drop-card-image b { color: var(--accent-main); font-size: 26px; }
+.rare-drop-card-top > div:last-child { min-width: 0; }
+.rare-drop-card-top span { color: var(--accent-main); font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.rare-drop-card-top h3 { overflow: hidden; margin: 5px 0; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.rare-drop-card-top small { color: var(--theme-muted); font-size: 9px; }
+.rare-drop-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 0 17px 17px; }
+.rare-drop-card-stats div { display: grid; gap: 4px; padding: 9px; border: 1px solid var(--theme-border); border-radius: 9px; background: var(--theme-elevated); }
+.rare-drop-card-stats span { color: var(--theme-muted); font-size: 8px; text-transform: uppercase; }
+.rare-drop-card-stats strong { color: var(--theme-text); font-size: 12px; }
+.rare-drop-screenshot-action { display: none; margin: 0 17px 17px; padding: 8px 11px; border: 1px dashed rgba(255,170,0,.38); border-radius: 8px; background: transparent; color: var(--accent-main); font-size: 9px; cursor: pointer; }
+.rare-drop-featured-item > .rare-drop-screenshot-action { position: absolute; left: 34px; bottom: 17px; margin: 0; }
+body.admin .rare-drop-screenshot-action { display: block; }
+.rare-drop-empty { grid-column: 1 / -1; display: grid; min-height: 260px; place-items: center; align-content: center; gap: 7px; padding: 30px; border: 1px dashed var(--theme-border); border-radius: 18px; background: var(--theme-card); text-align: center; }
+.rare-drop-empty span { color: var(--accent-main); font-size: 30px; }
+.rare-drop-empty h2 { margin: 0; font-size: 18px; }
+.rare-drop-empty p { max-width: 430px; margin: 0; color: var(--theme-muted); font-size: 11px; line-height: 1.5; }
+
+.rare-drop-modal-content { width: min(620px, calc(100vw - 30px)); }
+.rare-drop-modal-content form { padding: 20px; }
+.rare-drop-screenshot-preview { display: grid; height: 250px; margin-top: 14px; place-items: center; overflow: hidden; border: 1px dashed var(--theme-border); border-radius: 12px; background: var(--theme-input); color: var(--theme-muted); font-size: 11px; }
+.rare-drop-screenshot-preview img { width: 100%; height: 100%; object-fit: contain; }
+.rare-drop-lightbox { position: fixed; z-index: 3000; inset: 0; display: grid; place-items: center; padding: 40px; background: rgba(2,5,9,.9); backdrop-filter: blur(12px); }
+.rare-drop-lightbox.hidden { display: none; }
+.rare-drop-lightbox img { max-width: min(1200px, 94vw); max-height: 88vh; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; box-shadow: 0 28px 90px #000; }
+.rare-drop-lightbox button { position: fixed; top: 20px; right: 24px; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; background: rgba(15,20,28,.8); color: #fff; font-size: 24px; cursor: pointer; }
+
+@media (max-width: 900px) {
+  .rare-drop-featured.has-screenshot { grid-template-columns: 1fr; }
+  .rare-drop-featured-print img { height: 260px; min-height: 0; }
+  .rare-drop-featured-item { grid-template-columns: 110px 1fr; padding: 38px 24px 48px; }
+  .rare-drop-item-visual { width: 110px; height: 110px; }
+  .rare-drop-item-visual img { max-width: 85px; max-height: 85px; }
+  .rare-drop-featured-value { grid-column: 1 / -1; justify-items: start; text-align: left; }
+  .rare-drop-featured-item > .rare-drop-screenshot-action { left: auto; right: 24px; }
+}
+@media (max-width: 680px) {
+  .rare-museum-hero { min-height: 0; padding: 25px; }
+  .rare-museum-emblem { display: none; }
+  .rare-museum-summary { grid-template-columns: 1fr; }
+  .rare-museum-toolbar { grid-template-columns: 1fr; }
+  .rare-drop-featured-item { grid-template-columns: 1fr; justify-items: center; padding: 48px 20px 58px; text-align: center; }
+  .rare-drop-featured-value { grid-column: auto; justify-items: center; text-align: center; }
+  .rare-drop-featured-item > .rare-drop-screenshot-action { right: 50%; bottom: 15px; transform: translateX(50%); white-space: nowrap; }
+  .rare-drop-lightbox { padding: 16px; }
+}

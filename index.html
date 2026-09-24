@@ -34,7 +34,12 @@
       <div class="nav-item" data-page="team">Team</div>
       <div class="nav-item" data-page="conquistas">Conquistas</div>
       <!-- div class="nav-item" data-page="makers">Makers</div> -->
-      <div class="nav-item" data-page="profit">Profits</div>
+      <div id="profitNavGroup" class="nav-group profit-nav-group">
+        <div class="nav-item profit-nav-main" data-page="profit">Profits</div>
+        <div class="profit-nav-subnav">
+          <div class="nav-item nav-subitem" data-page="rareDrops"><span>✦</span> Drops Raros</div>
+        </div>
+      </div>
       <div class="nav-item admin-nav-item" data-page="itemsCatalog">Catálogo</div>
       <div class="nav-item admin-nav-item" data-page="profitPresets">Presets</div>
       <!--<div class="nav-item" data-page="logs">Updates/Logs</div> -->
@@ -434,6 +439,77 @@
   </div>
 </div>
 
+    </section>
+
+    <!-- MUSEU DE DROPS RAROS -->
+    <section class="page" id="rareDrops">
+      <header class="rare-museum-hero">
+        <div class="rare-museum-copy">
+          <span class="rare-museum-eyebrow">Museu dos drops raros</span>
+          <h1>Drops Raros</h1>
+          <p>Os drops raros que fizeram parte da minha jornada.</p>
+        </div>
+        <div class="rare-museum-emblem" aria-hidden="true"><span>✦</span></div>
+      </header>
+
+      <div class="rare-museum-summary">
+        <article><span>Relíquias</span><strong id="rareDropTotal">0</strong><small>Drops raros</small></article>
+        <article><span>Valor preservado</span><strong id="rareDropTotalValue">0</strong><small>Valor histórico somado</small></article>
+        <article><span>Maior drop</span><strong id="rareDropRecordValue">—</strong><small id="rareDropRecordName">Nenhum registrado</small></article>
+      </div>
+
+      <div class="rare-museum-toolbar">
+        <input id="rareDropSearch" type="search" placeholder="Buscar relíquia ou conteúdo...">
+        <select id="rareDropContentFilter">
+          <option value="all">Todos os conteúdos</option>
+          <option value="hunt">Hunt</option>
+          <option value="terror_hard">Terror (Hard)</option>
+          <option value="md_red">MD Red</option>
+          <option value="md_blue">MD Blue</option>
+          <option value="dg_shiny_tentacruel">DG Shiny Tentacruel</option>
+          <option value="legendary_dogs">Cães Lendários</option>
+          <option value="finder_rank_a">Finder Rank A</option>
+          <option value="subject_14">Subject #14</option>
+        </select>
+        <select id="rareDropSort">
+          <option value="newest">Mais recentes</option>
+          <option value="value">Maior valor</option>
+          <option value="oldest">Mais antigos</option>
+        </select>
+      </div>
+
+      <div id="rareDropFeatured"></div>
+      <div id="rareDropGrid" class="rare-drop-grid"></div>
+
+      <div id="rareDropScreenshotModal" class="modal hidden">
+        <div class="modal-content rare-drop-modal-content">
+          <div class="catalog-modal-header">
+            <div>
+              <span class="catalog-eyebrow">Memória da atividade</span>
+              <h2 id="rareDropScreenshotTitle">Adicionar print</h2>
+            </div>
+            <button id="closeRareDropScreenshotModal" type="button" aria-label="Fechar">×</button>
+          </div>
+          <form id="rareDropScreenshotForm">
+            <input id="rareDropScreenshotProfitId" type="hidden">
+            <label class="catalog-field">
+              <span>URL da print</span>
+              <input id="rareDropScreenshotUrl" type="url" placeholder="https://...">
+              <small>A print pertence à atividade e aparecerá em todos os drops raros desse registro.</small>
+            </label>
+            <div id="rareDropScreenshotPreview" class="rare-drop-screenshot-preview"><span>Nenhuma imagem informada</span></div>
+            <div class="catalog-form-actions">
+              <button id="removeRareDropScreenshot" class="catalog-danger-btn hidden" type="button">Remover print</button>
+              <button class="catalog-primary-btn" type="submit">Salvar print</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="rareDropLightbox" class="rare-drop-lightbox hidden" role="dialog" aria-modal="true" aria-label="Print do drop raro">
+        <button type="button" aria-label="Fechar">×</button>
+        <img alt="Print da atividade">
+      </div>
     </section>
 
     <!-- PRESETS DE PROFIT -->

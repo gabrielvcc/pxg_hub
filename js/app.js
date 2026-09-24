@@ -22,14 +22,22 @@ applyTheme(document.documentElement.dataset.theme);
 // NAVEGAÇÃO
 const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');
+const profitNavGroup = document.getElementById('profitNavGroup');
 
 navItems.forEach(item => {
   item.addEventListener('click', () => {
+    const targetPage = item.dataset.page;
+    const page = document.getElementById(targetPage);
+    if (!page) return;
+
     navItems.forEach(i => i.classList.remove('active'));
     pages.forEach(p => p.classList.remove('active'));
 
     item.classList.add('active');
-    document.getElementById(item.dataset.page).classList.add('active');
+    page.classList.add('active');
+    const isProfitArea = targetPage === 'profit' || targetPage === 'rareDrops';
+    profitNavGroup?.classList.toggle('expanded', isProfitArea);
+    profitNavGroup?.classList.toggle('section-active', targetPage === 'rareDrops');
   });
 });
 

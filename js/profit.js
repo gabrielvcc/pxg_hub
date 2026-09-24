@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupPricingReport();
   setupCatalogUI();
   setupProfitPresetUI();
+  setupRareDropMuseum();
   applyChartTheme();
   window.addEventListener("themechange", () => {
     applyChartTheme();
@@ -307,13 +308,17 @@ function looksLikeAnalyticsJson(text) {
 }
 
 function importAnalyticsJson(data) {
-  if (!data || !Array.isArray(data.Drops) || !Array.isArray(data.Supplies) || !data.Session) {
+  const hasDrops = Array.isArray(data?.Drops);
+  const hasSupplies = Array.isArray(data?.Supplies);
+  if (!data?.Session || (!hasDrops && !hasSupplies)) {
     throw new Error("JSON não reconhecido. Copie o JSON completo do Analytics.");
   }
 
-  const loot = aggregateAnalyticsItems(data.Drops);
-  const supplies = aggregateAnalyticsItems(data.Supplies);
-  if (!Object.keys(loot).length) throw new Error("O JSON não contém itens de loot válidos.");
+  const loot = aggregateAnalyticsItems(hasDrops ? data.Drops : []);
+  const supplies = aggregateAnalyticsItems(hasSupplies ? data.Supplies : []);
+  if (!Object.keys(loot).length && !Object.keys(supplies).length) {
+    throw new Error("O JSON não contém loot nem supplies válidos.");
+  }
 
   replaceItemRows(document.getElementById("itemsContainer"), "loot", loot);
   replaceItemRows(document.getElementById("costContainer"), "supply", supplies);
@@ -417,16 +422,17 @@ function setupSave() {
       const qty = Number(row.querySelector(".item-qty").value);
       if (name && qty > 0) parsedLoot[name] = (parsedLoot[name] || 0) + qty;
     });
-    if (!Object.keys(parsedLoot).length) return alert("Adicione ou processe pelo menos um item de loot");
-
     // GASTOS
     document.querySelectorAll("#costContainer .item-row").forEach(row => {
       const input = row.querySelector(".item-search");
-      const name = input.dataset.selected || input.value;
-      const qty = parseInt(row.querySelector(".item-qty").value);
+      const name = (input.dataset.selected || input.value).trim();
+      const qty = Number(row.querySelector(".item-qty").value);
 
-      if (name && qty) parsedCosts[name] = qty;
+      if (name && qty > 0) parsedCosts[name] = (parsedCosts[name] || 0) + qty;
     });
+    if (!Object.keys(parsedLoot).length && !Object.keys(parsedCosts).length) {
+      return alert("Adicione ou processe pelo menos um item de loot ou supply");
+    }
 
     const gainData = calculateTotal(parsedLoot, "gain");
     const costData = calculateTotal(parsedCosts, "cost");
@@ -797,6 +803,7 @@ function setupDashboard() {
       updateDateFilterOptions();
       renderDashboard();
       renderPricingReport();
+      renderRareDropMuseum();
     },
     (error) => {
       console.error("Erro ao carregar profits:", error);
@@ -998,6 +1005,7 @@ function subscribeItemCatalog() {
     renderPricingReport();
     renderCatalog();
     renderMonthlyDropHighlight(document.getElementById("dateFilter")?.value || "all");
+    renderRareDropMuseum();
   }, error => {
     console.error("Erro ao carregar catálogo de preços:", error);
     unsubscribePriceCatalog = null;
@@ -1754,6 +1762,41 @@ const EXTRAORDINARY_DROP_MIN_UNIT_VALUE = 5_000_000;
 const EXTRAORDINARY_DROP_MIN_HISTORY_SIZE = 10;
 const EXTRAORDINARY_DROP_MAX_OCCURRENCE_RATE = 0.2;
 
+function getExtraordinaryDrops(data = profits) {
+  const lootHistory = profits.filter(profit => Object.keys(profit.loot || {}).length > 0);
+  const itemOccurrences = new Map();
+  lootHistory.forEach(profit => {
+    const uniqueItems = new Set(Object.keys(profit.loot || {}).map(name => name.trim().toLowerCase()));
+    uniqueItems.forEach(name => itemOccurrences.set(name, (itemOccurrences.get(name) || 0) + 1));
+  });
+
+  return data.flatMap(profit => Object.entries(profit.loot || {}).map(([name, quantity]) => {
+    const gains = profit.prices?.gains || {};
+    const priceKey = findItemKey(gains, name);
+    const unitPrice = Number(priceKey ? gains[priceKey] : 0);
+    const occurrenceRate = lootHistory.length
+      ? (itemOccurrences.get(name.trim().toLowerCase()) || 0) / lootHistory.length
+      : 0;
+    const numericQuantity = Number(quantity || 0);
+    return {
+      profitId: profit.id,
+      name,
+      quantity: numericQuantity,
+      unitPrice,
+      totalValue: unitPrice * numericQuantity,
+      occurrenceRate,
+      type: profit.type || "",
+      subgroup: profit.subgroup || profit.presetName || "",
+      date: getProfitDate(profit),
+      screenshotUrl: profit.screenshotUrl || ""
+    };
+  })).filter(item => {
+    if (item.quantity <= 0 || item.unitPrice < EXTRAORDINARY_DROP_MIN_UNIT_VALUE) return false;
+    return lootHistory.length < EXTRAORDINARY_DROP_MIN_HISTORY_SIZE
+      || item.occurrenceRate <= EXTRAORDINARY_DROP_MAX_OCCURRENCE_RATE;
+  });
+}
+
 function renderMonthlyDropHighlight(dateFilter = "all") {
   const card = document.getElementById("monthlyDropHighlight");
   if (!card) return;
@@ -1768,34 +1811,7 @@ function renderMonthlyDropHighlight(dateFilter = "all") {
     return getMonthKey(date) === getMonthKey(now);
   });
 
-  const lootHistory = profits.filter(profit => Object.keys(profit.loot || {}).length > 0);
-  const itemOccurrences = new Map();
-  lootHistory.forEach(profit => {
-    const uniqueItems = new Set(Object.keys(profit.loot || {}).map(name => name.trim().toLowerCase()));
-    uniqueItems.forEach(name => itemOccurrences.set(name, (itemOccurrences.get(name) || 0) + 1));
-  });
-
-  const candidates = data.flatMap(profit => Object.entries(profit.loot || {}).map(([name, quantity]) => {
-    const gains = profit.prices?.gains || {};
-    const priceKey = findItemKey(gains, name);
-    const unitPrice = Number(priceKey ? gains[priceKey] : 0);
-    const occurrenceRate = lootHistory.length
-      ? (itemOccurrences.get(name.trim().toLowerCase()) || 0) / lootHistory.length
-      : 0;
-    return {
-      name,
-      quantity: Number(quantity || 0),
-      unitPrice,
-      totalValue: unitPrice * Number(quantity || 0),
-      occurrenceRate,
-      type: profit.type || "",
-      date: getProfitDate(profit)
-    };
-  })).filter(item => {
-    if (item.quantity <= 0 || item.unitPrice < EXTRAORDINARY_DROP_MIN_UNIT_VALUE) return false;
-    return lootHistory.length < EXTRAORDINARY_DROP_MIN_HISTORY_SIZE
-      || item.occurrenceRate <= EXTRAORDINARY_DROP_MAX_OCCURRENCE_RATE;
-  });
+  const candidates = getExtraordinaryDrops(data);
 
   const image = document.getElementById("monthlyDropImage");
   const fallback = document.getElementById("monthlyDropImageFallback");
@@ -1843,6 +1859,207 @@ function getDropHighlightPeriodLabel(dateFilter) {
   if (dateFilter.startsWith("month:")) return formatMonthFilterLabel(dateFilter.slice(6));
   if (dateFilter === "year") return "Ano atual";
   return "Histórico completo";
+}
+
+function setupRareDropMuseum() {
+  document.getElementById("rareDropSearch")?.addEventListener("input", renderRareDropMuseum);
+  document.getElementById("rareDropContentFilter")?.addEventListener("change", renderRareDropMuseum);
+  document.getElementById("rareDropSort")?.addEventListener("change", renderRareDropMuseum);
+
+  [document.getElementById("rareDropFeatured"), document.getElementById("rareDropGrid")].forEach(container => {
+    container?.addEventListener("click", event => {
+      const screenshotButton = event.target.closest("[data-rare-screenshot]");
+      if (screenshotButton) {
+        openRareDropLightbox(decodeURIComponent(screenshotButton.dataset.rareScreenshot));
+        return;
+      }
+      const editButton = event.target.closest("[data-rare-drop-profit]");
+      if (editButton) {
+        openRareDropScreenshotModal(
+          decodeURIComponent(editButton.dataset.rareDropProfit),
+          decodeURIComponent(editButton.dataset.rareDropName || "")
+        );
+      }
+    });
+  });
+
+  document.getElementById("closeRareDropScreenshotModal")?.addEventListener("click", closeRareDropScreenshotModal);
+  document.getElementById("rareDropScreenshotModal")?.addEventListener("click", event => {
+    if (event.target.id === "rareDropScreenshotModal") closeRareDropScreenshotModal();
+  });
+  document.getElementById("rareDropScreenshotUrl")?.addEventListener("input", event => {
+    renderRareDropScreenshotPreview(event.target.value.trim());
+  });
+  document.getElementById("rareDropScreenshotForm")?.addEventListener("submit", saveRareDropScreenshot);
+  document.getElementById("removeRareDropScreenshot")?.addEventListener("click", () => persistRareDropScreenshot(""));
+
+  const lightbox = document.getElementById("rareDropLightbox");
+  lightbox?.addEventListener("click", event => {
+    if (event.target === lightbox || event.target.closest("button")) closeRareDropLightbox();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeRareDropLightbox();
+      closeRareDropScreenshotModal();
+    }
+  });
+}
+
+function renderRareDropMuseum() {
+  const grid = document.getElementById("rareDropGrid");
+  const featured = document.getElementById("rareDropFeatured");
+  if (!grid || !featured) return;
+
+  const allDrops = getExtraordinaryDrops(profits);
+  const totalValue = allDrops.reduce((total, drop) => total + drop.totalValue, 0);
+  const record = [...allDrops].sort((a, b) => b.unitPrice - a.unitPrice || b.totalValue - a.totalValue)[0];
+  document.getElementById("rareDropTotal").textContent = allDrops.length;
+  document.getElementById("rareDropTotalValue").textContent = formatMoney(totalValue);
+  document.getElementById("rareDropRecordValue").textContent = record ? formatMoney(record.unitPrice) : "—";
+  document.getElementById("rareDropRecordName").textContent = record?.name || "Nenhum registrado";
+
+  const search = document.getElementById("rareDropSearch")?.value.trim().toLocaleLowerCase("pt-BR") || "";
+  const typeFilter = document.getElementById("rareDropContentFilter")?.value || "all";
+  const sort = document.getElementById("rareDropSort")?.value || "newest";
+  const visibleDrops = allDrops.filter(drop => {
+    const searchText = `${drop.name} ${formatContentType(drop.type)} ${drop.subgroup}`.toLocaleLowerCase("pt-BR");
+    return matchesContentFilter(drop.type, typeFilter) && (!search || searchText.includes(search));
+  });
+
+  visibleDrops.sort((a, b) => {
+    if (sort === "value") return b.unitPrice - a.unitPrice || b.totalValue - a.totalValue;
+    const dateDifference = (b.date?.getTime?.() || 0) - (a.date?.getTime?.() || 0);
+    return sort === "oldest" ? -dateDifference : dateDifference;
+  });
+
+  if (!visibleDrops.length) {
+    featured.innerHTML = "";
+    grid.innerHTML = `<div class="rare-drop-empty"><span>✦</span><h2>Nenhuma relíquia encontrada</h2><p>Quando um drop realmente extraordinário for registrado, ele ganhará um lugar no museu.</p></div>`;
+    return;
+  }
+
+  const featuredDrop = [...visibleDrops].sort((a, b) => b.unitPrice - a.unitPrice || b.totalValue - a.totalValue)[0];
+  featured.innerHTML = renderRareDropFeatured(featuredDrop);
+  const galleryDrops = visibleDrops.filter(drop => drop !== featuredDrop);
+  grid.innerHTML = galleryDrops.map(renderRareDropCard).join("");
+}
+
+function renderRareDropFeatured(drop) {
+  const image = catalogPrices[drop.name.toLowerCase()]?.image || "";
+  const dateLabel = drop.date?.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) || "Data não informada";
+  const context = [formatContentType(drop.type), drop.subgroup].filter(Boolean).join(" · ");
+  const screenshot = drop.screenshotUrl ? `
+    <button class="rare-drop-featured-print" type="button" data-rare-screenshot="${encodeURIComponent(drop.screenshotUrl)}">
+      <img src="${escapeHtml(drop.screenshotUrl)}" alt="Print de ${escapeHtml(drop.name)}" loading="lazy">
+      <span>Abrir print da atividade</span>
+    </button>` : "";
+  return `<article class="rare-drop-featured ${drop.screenshotUrl ? "has-screenshot" : ""}">
+    <div class="rare-drop-featured-item">
+      <span class="rare-drop-crown">Peça principal</span>
+      <div class="rare-drop-item-visual">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(drop.name)}">` : "<b>✦</b>"}</div>
+      <div class="rare-drop-featured-copy">
+        <span>${escapeHtml(context)}</span>
+        <h2>${escapeHtml(drop.name)}</h2>
+        <p>${escapeHtml(dateLabel)} · ${formatItemQuantity(drop.quantity)} unidade${drop.quantity === 1 ? "" : "s"}</p>
+      </div>
+      <div class="rare-drop-featured-value"><span>Valor unitário histórico</span><strong>${formatMoney(drop.unitPrice)}</strong><small>Total do drop: ${formatMoney(drop.totalValue)}</small></div>
+      ${renderRareDropScreenshotAction(drop)}
+    </div>
+    ${screenshot}
+  </article>`;
+}
+
+function renderRareDropCard(drop) {
+  const image = catalogPrices[drop.name.toLowerCase()]?.image || "";
+  const dateLabel = drop.date?.toLocaleDateString("pt-BR") || "Data não informada";
+  const context = [formatContentType(drop.type), drop.subgroup].filter(Boolean).join(" · ");
+  const screenshot = drop.screenshotUrl ? `<button class="rare-drop-card-print" type="button" data-rare-screenshot="${encodeURIComponent(drop.screenshotUrl)}"><img src="${escapeHtml(drop.screenshotUrl)}" alt="Print de ${escapeHtml(drop.name)}" loading="lazy"><span>Ver print</span></button>` : "";
+  return `<article class="rare-drop-card">
+    ${screenshot}
+    <div class="rare-drop-card-top">
+      <div class="rare-drop-card-image">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(drop.name)}" loading="lazy">` : "<b>✦</b>"}</div>
+      <div><span>${escapeHtml(context)}</span><h3>${escapeHtml(drop.name)}</h3><small>${escapeHtml(dateLabel)}</small></div>
+    </div>
+    <div class="rare-drop-card-stats">
+      <div><span>Valor unitário</span><strong>${formatMoney(drop.unitPrice)}</strong></div>
+      <div><span>Quantidade</span><strong>${formatItemQuantity(drop.quantity)}</strong></div>
+    </div>
+    ${renderRareDropScreenshotAction(drop)}
+  </article>`;
+}
+
+function renderRareDropScreenshotAction(drop) {
+  return `<button class="rare-drop-screenshot-action" type="button" data-rare-drop-profit="${encodeURIComponent(drop.profitId)}" data-rare-drop-name="${encodeURIComponent(drop.name)}">${drop.screenshotUrl ? "Alterar print" : "+ Adicionar print"}</button>`;
+}
+
+function openRareDropScreenshotModal(profitId, itemName) {
+  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  const profit = profits.find(entry => entry.id === profitId);
+  if (!profit) return;
+  const url = profit.screenshotUrl || "";
+  document.getElementById("rareDropScreenshotProfitId").value = profitId;
+  document.getElementById("rareDropScreenshotUrl").value = url;
+  document.getElementById("rareDropScreenshotTitle").textContent = itemName ? `Print · ${itemName}` : "Adicionar print";
+  document.getElementById("removeRareDropScreenshot").classList.toggle("hidden", !url);
+  renderRareDropScreenshotPreview(url);
+  document.getElementById("rareDropScreenshotModal").classList.remove("hidden");
+}
+
+function closeRareDropScreenshotModal() {
+  document.getElementById("rareDropScreenshotModal")?.classList.add("hidden");
+}
+
+function renderRareDropScreenshotPreview(url) {
+  const preview = document.getElementById("rareDropScreenshotPreview");
+  if (!preview) return;
+  preview.innerHTML = url
+    ? `<img src="${escapeHtml(url)}" alt="Prévia da print">`
+    : "<span>Nenhuma imagem informada</span>";
+}
+
+async function saveRareDropScreenshot(event) {
+  event.preventDefault();
+  await persistRareDropScreenshot(document.getElementById("rareDropScreenshotUrl").value.trim());
+}
+
+async function persistRareDropScreenshot(url) {
+  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  const profitId = document.getElementById("rareDropScreenshotProfitId").value;
+  if (!profitId) return;
+  if (url) {
+    try {
+      const parsedUrl = new URL(url);
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) throw new Error();
+    } catch {
+      showToast("Informe uma URL válida para a print");
+      return;
+    }
+  }
+  try {
+    await setDoc(doc(db, "profits", profitId), {
+      screenshotUrl: url,
+      screenshotUpdatedAt: serverTimestamp()
+    }, { merge: true });
+    closeRareDropScreenshotModal();
+    showToast(url ? "Print salva no museu" : "Print removida do museu");
+  } catch (error) {
+    console.error("Erro ao salvar print do drop:", error);
+    showToast("Não foi possível salvar a print");
+  }
+}
+
+function openRareDropLightbox(url) {
+  const lightbox = document.getElementById("rareDropLightbox");
+  const image = lightbox?.querySelector("img");
+  if (!lightbox || !image || !url) return;
+  image.src = url;
+  lightbox.classList.remove("hidden");
+}
+
+function closeRareDropLightbox() {
+  const lightbox = document.getElementById("rareDropLightbox");
+  lightbox?.classList.add("hidden");
+  lightbox?.querySelector("img")?.removeAttribute("src");
 }
 
 function renderKpis(data) {
