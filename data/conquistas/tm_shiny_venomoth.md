@@ -3,7 +3,7 @@
 
 <img src="https://wiki.pokexgames.com/images/1/10/ShinyVenomoth.gif" style="width: 100px;">
 
-Montar esse TM foi a coisa mais caro que ja fiz na PXG acho, mas valeu muito a pena.
+Montar esse TM foi a coisa mais caro que ja fiz na PXG, mas valeu a pena.
 <br><br>
 
 ---
@@ -82,8 +82,15 @@ Foi pago <strong class="gradient-text gradient-blue">250kk + Shiny Venomoth +70 
 <div class="md-icon-text-line">
   <img src="https://wiki.pokexgames.com/images/9/9f/Chosen_Orb.gif" style="width: auto;">
   <span style="font-size: 16px">
-    Como essa estava sem boost, usei um dos meus <strong class="gradient-text gradient-blue">Chosen Orb</strong>, consideraremos que foi <strong class="gradient-text gradient-blue">15kk</strong>.
+    Como essa estava sem boost, usei um dos meus <strong class="gradient-text gradient-blue">Chosen Orb</strong>, consideraremos que foi <strong class="gradient-text gradient-blue">14kk</strong>.
   </span>
 </div>
 E assim ficou o exodia da Shiny Venomoth:<br>
 <img src="/assets/prints/exodiamoth.png"><br>
+
+<div class="md-icon-text-line">
+  <img src="https://cdn-icons-png.flaticon.com/512/2150/2150150.png" style="width: 24px; height: 24px;">
+  <span style="font-size: 16px">
+    No total foi gasto: <strong class="gradient-text gradient-blue">861kk</strong>
+  </span>
+</div>
