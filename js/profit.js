@@ -15,6 +15,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const ADMIN_EMAIL = "gabrielvarnes1@gmail.com";
+const ADMIN_PROVIDER = "google.com";
 
 
 Chart.defaults.devicePixelRatio = window.devicePixelRatio;
@@ -31,6 +32,19 @@ let profitPresets = [];
 let unsubscribeProfitPresets = null;
 let selectedProfitPresetId = null;
 let processedLootMessages = [];
+
+function isAdminUser(user = currentUser) {
+  if (!user || user.emailVerified !== true) return false;
+  const hasGoogleProvider = user.providerData?.some(provider => provider.providerId === ADMIN_PROVIDER);
+  return hasGoogleProvider && user.email?.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
+
+function requireAdminAccess() {
+  if (isAdminUser()) return true;
+  console.warn("Operação administrativa bloqueada no cliente.");
+  showToast("Sua conta não tem permissão de administrador");
+  return false;
+}
 
 const PROFIT_PRESET_SEED = [
   ["md_red", "Alpha Hisuian Arcanine", "https://wiki.pokexgames.com/images/d/d0/Banner_Bolinha_MD_-_Alpha_Hisuian_Arcanine.webp"],
@@ -110,7 +124,7 @@ function setupAuth() {
 
   onUserChange((user) => {
     currentUser = user;
-    const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    const isAdmin = isAdminUser(user);
 
     if (isAdmin) {
       document.body.classList.add("admin");
@@ -399,6 +413,7 @@ function setupSave() {
   const modal = document.getElementById("modal");
 
   saveBtn.onclick = async () => {
+    if (!requireAdminAccess()) return;
     const type = entryType.value;
 
     if (!type) {
@@ -914,6 +929,7 @@ function getAvailableItems() {
 }
 
 async function initializeItemCatalog() {
+  if (!requireAdminAccess()) return;
   if (catalogInitializationPromise) return catalogInitializationPromise;
 
   catalogInitializationPromise = (async () => {
@@ -929,6 +945,7 @@ async function initializeItemCatalog() {
 }
 
 async function migrateLegacyItems() {
+  if (!requireAdminAccess()) return;
   const currentItems = await getDocs(collection(db, "items"));
   if (!currentItems.empty) return;
 
@@ -987,7 +1004,7 @@ function subscribeItemCatalog() {
       const normalized = normalizeCatalogItem(data);
       catalogPrices[data.name.toLowerCase()] = { ...normalized, id: priceDoc.id };
 
-      const isAdmin = currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      const isAdmin = isAdminUser();
       if (isAdmin && (data.image == null || data.type == null || data.buy == null || data.sell == null)) {
         migrations.push(setDoc(priceDoc.ref, normalized, { merge: true }));
       }
@@ -1027,6 +1044,7 @@ function normalizeCatalogItem(item) {
 }
 
 async function registerMissingItems(itemNames, priceField) {
+  if (!requireAdminAccess()) return;
   await Promise.all(itemNames.map(name => {
     const existing = catalogPrices[name.toLowerCase()];
     const inferredType = priceField === "sell" ? "loot" : "supply";
@@ -1105,6 +1123,7 @@ function collectPendingFromRecord(pending, profit, itemsField, pricesField, pric
 }
 
 async function updateMissingItemPrice(name, priceField, price) {
+  if (!requireAdminAccess()) return;
   const existing = catalogPrices[name.toLowerCase()] || {};
   const inferredType = priceField === "sell" ? "loot" : "supply";
   const type = existing.type && existing.type !== inferredType ? "both" : (existing.type || inferredType);
@@ -1141,6 +1160,7 @@ async function updateMissingItemPrice(name, priceField, price) {
 }
 
 async function backfillMissingProfitPrices(name, priceField, price) {
+  if (!requireAdminAccess()) return;
   const affected = profits.filter(profit => {
     const source = priceField === "sell" ? profit.loot : profit.costs;
     const pricesField = priceField === "sell" ? "gains" : "costs";
@@ -1218,11 +1238,13 @@ function getItemStatus(item) {
 
 // ================= PROFIT PRESETS =================
 async function initializeProfitPresets() {
+  if (!requireAdminAccess()) return;
   await seedOfficialProfitPresets();
   subscribeProfitPresets();
 }
 
 async function seedOfficialProfitPresets() {
+  if (!requireAdminAccess()) return;
   const snapshot = await getDocs(collection(db, "profitPresets"));
   const existingIds = new Set(snapshot.docs.map(presetDoc => presetDoc.id));
   const seedMarkerId = "_official_seed_v2";
@@ -1420,7 +1442,7 @@ function collectPresetCosts() {
 
 async function saveProfitPreset(event) {
   event.preventDefault();
-  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  if (!requireAdminAccess()) return;
   const currentId = document.getElementById("profitPresetId").value;
   const name = document.getElementById("profitPresetName").value.trim();
   const type = document.getElementById("profitPresetType").value;
@@ -1458,6 +1480,7 @@ async function saveProfitPreset(event) {
 }
 
 async function deleteProfitPreset() {
+  if (!requireAdminAccess()) return;
   const presetId = document.getElementById("profitPresetId").value;
   const preset = profitPresets.find(entry => entry.id === presetId);
   if (!preset || !window.confirm(`Excluir o preset "${preset.name}"?`)) return;
@@ -1572,7 +1595,7 @@ function closeCatalogModal() {
 }
 
 async function deleteCatalogItem() {
-  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  if (!requireAdminAccess()) return;
 
   const itemId = document.getElementById("catalogItemId").value;
   const item = getAvailableItems().find(entry => entry.id === itemId);
@@ -1630,7 +1653,7 @@ function updateCatalogImagePreview(url) {
 
 async function saveCatalogItem(event) {
   event.preventDefault();
-  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  if (!requireAdminAccess()) return;
 
   const idInput = document.getElementById("catalogItemId");
   const name = document.getElementById("catalogItemName").value.trim();
@@ -1993,7 +2016,7 @@ function renderRareDropScreenshotAction(drop) {
 }
 
 function openRareDropScreenshotModal(profitId, itemName) {
-  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  if (!requireAdminAccess()) return;
   const profit = profits.find(entry => entry.id === profitId);
   if (!profit) return;
   const url = profit.screenshotUrl || "";
@@ -2023,7 +2046,7 @@ async function saveRareDropScreenshot(event) {
 }
 
 async function persistRareDropScreenshot(url) {
-  if (currentUser?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+  if (!requireAdminAccess()) return;
   const profitId = document.getElementById("rareDropScreenshotProfitId").value;
   if (!profitId) return;
   if (url) {
